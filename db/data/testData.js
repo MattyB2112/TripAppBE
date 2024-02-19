@@ -1,18 +1,5 @@
 const mongoose = require("mongoose");
 
-const seedUsers = [
-  {
-    username: "MattB",
-    password: "password",
-    email: "mattb@matt.com",
-  },
-  {
-    username: "Justyna",
-    password: "password2",
-    email: "justyna@justyna.com",
-  },
-];
-
 const userSchema = new mongoose.Schema({
   username: {
     type: String,

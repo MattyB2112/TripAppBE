@@ -1,25 +1,8 @@
 const mongoose = require("mongoose");
 const request = require("supertest");
 const app = require("../app");
-const User = require("../db/data/testData");
 const URITest = "mongodb://localhost:27017/TripAppTEST";
-const seedUsers = [
-  {
-    username: "MattB",
-    password: "password",
-    email: "mattb@matt.com",
-  },
-  {
-    username: "Justyna",
-    password: "password2",
-    email: "justyna@justyna.com",
-  },
-];
-
-const seedDB = async () => {
-  await User.deleteMany({});
-  await User.insertMany(seedUsers);
-};
+const { seedDB } = require("../db/seeds/seed");
 
 beforeAll(async () => {
   await mongoose.connect(URITest);
@@ -30,8 +13,7 @@ afterAll(() => {
 });
 
 beforeEach(async () => {
-  await User.deleteMany({});
-  await User.insertMany(seedUsers);
+  await seedDB();
 });
 
 describe("/user", () => {

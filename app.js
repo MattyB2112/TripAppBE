@@ -1,9 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const socketIO = require("socket.io");
-const app = express();
 const http = require("http");
 const User = require("./db/data/testData");
+
+const app = express();
 const server = http.createServer(app);
 
 app.use(express.json());
