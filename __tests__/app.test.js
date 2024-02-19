@@ -25,4 +25,12 @@ describe("/user", () => {
     });
     expect(response.status).toBe(200);
   });
+  test("returns trip data", async () => {
+    const response = await request(app).get("/trip");
+    const { trips } = response.body;
+    trips.map((trip) => {
+      console.log(trip);
+    });
+    expect(response.status).toBe(200);
+  });
 });

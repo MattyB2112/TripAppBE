@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const User = require("../db/data/testData");
+const User = require("./data/dataSchemas");
 const URITest = "mongodb://localhost:27017/TripAppTEST";
 const URIProd = "mongodb://localhost:27017/TripApp";
 const db = mongoose.connect(URIProd);
