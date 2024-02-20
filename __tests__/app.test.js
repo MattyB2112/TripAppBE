@@ -20,19 +20,17 @@ describe("/GET", () => {
   test("GET/user returns user data", async () => {
     const response = await request(app).get("/user");
     const { users } = response.body;
-    users.map((user) => {
-      //console.log(user);
-    });
+
     expect(response.status).toBe(200);
   });
+
   test("GET /trip returns trip data", async () => {
     const response = await request(app).get("/trip");
     const { trips } = response.body;
-    trips.map((trip) => {
-      //console.log(trip);
-    });
+
     expect(response.status).toBe(200);
   });
+
   test("GET /trip/:trip_id returns a specific trip", async () => {
     const response = await request(app).get("/trip");
     const { trips } = response.body
@@ -111,3 +109,43 @@ describe("POST", () => {
     expect(response.status).toBe(201)
   })
 })
+
+describe("GET /users/:username", () => {
+  test("returns user's username", async () => {
+    const response = await request(app).get("/users/MattB");
+    const { user } = response.body;
+    expect(response.status).toBe(200);
+    expect(user.username).toBe("MattB");
+  });
+  test("returns correct error message if user not found", async () => {
+    const response = await request(app).get("/users/MattyBoo");
+    const { user } = response.body;
+    expect(response.status).toBe(404);
+  });
+});
+
+describe("POST /user", () => {
+  test("returns user object with correct properties", async () => {
+    const userToAdd = {
+      username: "Jenny",
+      password: "password10",
+      email: "jenny@fromtheblock.com",
+    };
+    const response = await request(app).post("/user").send(userToAdd);
+    const { newUser } = response._body;
+    expect(response.status).toBe(201);
+    expect(newUser).toHaveProperty("username");
+    expect(newUser).toHaveProperty("password");
+    expect(newUser).toHaveProperty("email");
+  });
+  test("400- returns duplicate key error message when new users try to sign in as an existing user", async () => {
+    const userToAdd = {
+      username: "MattB",
+      password: "password",
+      email: "mattb@matt.com",
+    };
+    const response = await request(app).post("/user").send(userToAdd);
+    expect(response.status).toBe(400);
+  });
+});
+

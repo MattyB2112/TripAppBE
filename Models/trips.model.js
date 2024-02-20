@@ -1,6 +1,6 @@
 const { Trip, User } = require("../db/data/dataSchemas");
 
-exports.fetchTrips = async () => {
+exports.fetchTrip = async () => {
   const data = await Trip.find();
   return data;
 };
