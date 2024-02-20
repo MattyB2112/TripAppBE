@@ -20,6 +20,7 @@ describe("/user", () => {
   test("returns user data", async () => {
     const response = await request(app).get("/user");
     const { users } = response.body;
+    console.log(response);
     users.map((user) => {
       console.log(user);
     });
