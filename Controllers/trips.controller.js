@@ -1,8 +1,8 @@
-const { fetchTrips } = require("../Models/trips.model");
+const { fetchTrip } = require("../Models/trips.model");
 
-exports.getTrips = async (req, res, next) => {
+exports.getTrip = async (req, res, next) => {
   try {
-    const trips = await fetchTrips();
+    const trips = await fetchTrip();
     res.status(200).send({ trips: trips });
   } catch (error) {
     if (error.status === 404) {
