@@ -22,3 +22,7 @@ exports.addTrip = async (tripData) => {
   const response = await newTrip.save()
   return response
 }
+
+exports.addActivity = async () => {
+  console.log('Model');
+}

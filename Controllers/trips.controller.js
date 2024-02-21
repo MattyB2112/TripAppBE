@@ -1,4 +1,9 @@
-const { fetchTrip, fetchTripById, addTrip } = require("../Models/trips.model");
+const {
+  fetchTrip,
+  fetchTripById,
+  addTrip,
+  addActivity,
+} = require("../Models/trips.model");
 
 exports.getTrip = async (req, res, next) => {
   try {
@@ -20,23 +25,28 @@ exports.getTripById = async (req, res, next) => {
     res.status(200).send({ trip: trip });
   } catch (error) {
     if (error.status === 404) {
-      console.log(error)
+      console.log(error);
       const errorMessage = error.message;
-      res.status(404).send({ msg: errorMessage })
+      res.status(404).send({ msg: errorMessage });
     } else {
       next(error);
     }
   }
-
-
-}
+};
 
 exports.postTrip = async (req, res, next) => {
-  const newTrip = req.body
+  const newTrip = req.body;
   try {
-    const newTripData = await addTrip(newTrip)
-    res.status(201).send({ newTripData: newTripData })
+    const newTripData = await addTrip(newTrip);
+    res.status(201).send({ newTripData: newTripData });
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
+
+exports.patchActivity = async (req, res, next) => {
+  try {
+    addActivity();
+    console.log("controller");
+  } catch (error) {}
+};
