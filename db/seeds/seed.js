@@ -1,5 +1,4 @@
 const { User, Trip } = require("../data/dataSchemas");
-
 const seedUsers = [
   {
     username: "MattB",
@@ -27,7 +26,6 @@ const seedUsers = [
     email: "stavros@stavros.com",
   },
 ];
-
 const seedTrips = [
   {
     name: "Paris",
@@ -128,12 +126,10 @@ const seedTrips = [
     ],
   },
 ];
-
 const seedDB = async () => {
   await User.deleteMany({});
   await Trip.deleteMany({});
   await User.insertMany(seedUsers);
   await Trip.insertMany(seedTrips);
 };
-
 module.exports = { seedDB, seedUsers, seedTrips };

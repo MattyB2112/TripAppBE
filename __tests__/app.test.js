@@ -36,6 +36,7 @@ describe("/GET", () => {
     const { trips } = response.body;
 
     const tripId = trips[0]._id;
+
     const expectedTrip = {
       _id: tripId,
       name: "Paris",
@@ -162,7 +163,49 @@ describe("POST /user", () => {
   });
 });
 
-describe("PATCH", () => {
+describe("/PATCH /trips/:tripbyId/activity", () => {
+  test("should update trips activity pro document", async () => {
+    const responseId = await request(app).get("/trip");
+    const { trips } = responseId.body;
+
+    const tripId = trips[0]._id;
+
+    const activity = { startdate: "tomorrow", name: "fishing", info: "Trafalgar Square" };
+
+    const response = await request(app)
+      .patch(`/trip/${tripId}/activity`)
+      .send(activity);
+    expect(response.status).toBe(204);
+
+    const data = await request(app).get(`/trip/${tripId}`);
+    const tripById = data._body.trip;
+    console.log(data, "data")
+    expect(tripById.activities).toHaveLength(2);
+  });
+});
+
+describe("PATCH /trips/:tripbyid/members", () => {
+  test("adds member to members array of a given trip", async () => {
+    const responseId = await request(app).get("/trip");
+    const { trips } = responseId.body;
+
+    const tripId = trips[1]._id;
+    const member = {
+      username: "Justyna",
+      password: "password2",
+      email: "justyna@justyna.com",
+    };
+
+    const response = await request(app)
+      .patch(`/trip/${tripId}/member`)
+      .send({ member });
+    expect(response.status).toBe(204);
+
+    const data = await request(app).get(`/trip/${tripId}`);
+    const tripById = data._body.trip;
+    expect(tripById.members).toHaveLength(2);
+  })
+})describe("PATCH", () => {
   test("patching travel on a trip returns new travel object", async () => {
     const response = await request(app).get("/trip");
     const { trips } = response.body;

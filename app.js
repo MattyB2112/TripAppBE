@@ -11,6 +11,8 @@ const {
   getTrip,
   getTripById,
   postTrip,
+  setActivity,
+  setMembers,
 } = require("./Controllers/trips.controller");
 const {
   mongoDBErrorHandler,
@@ -31,6 +33,9 @@ app.get("/trip/:trip_id", getTripById);
 
 app.post("/trip", postTrip);
 app.post("/user", postUser);
+
+app.patch("/trip/:trip_id/activity", setActivity);
+app.patch("/trip/:trip_id/member", setMembers);
 
 app.patch("/trip/:trip_id/travel", setTravel);
 app.patch("/trip/:trip_id/stay", setStay);
