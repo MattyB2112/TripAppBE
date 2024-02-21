@@ -32,8 +32,25 @@ const seedTrips = [
   {
     name: "Paris",
     admin: "Justyna",
-    travel: ["plane at 5pm", "train at 8pm"],
-    stay: ["Hilton for a week", "Ritz for a week"],
+    travel: [
+      {
+        startdate: "date",
+        leavetime: "time",
+        arrivedate: "date",
+        arrivetime: "time",
+        type: "plane",
+        info: "Heathrow",
+      },
+    ],
+    stay: [
+      {
+        startdate: "date",
+        endate: "date",
+        name: "hotel coder",
+        type: "hotel",
+        info: "address",
+      },
+    ],
     members: [
       {
         username: "MattB",
@@ -46,18 +63,18 @@ const seedTrips = [
         email: "justyna@justyna.com",
       },
     ],
-    activities: [
-      "museum", "restaurant", "club"
-    ]
+    activities: [{ startdate: "date", name: "museum", info: "town square" }],
   },
   {
     name: "Malta",
     admin: "Stavros",
-    members: [{
-      username: "Stavros",
-      password: "password5",
-      email: "stavros@stavros.com",
-    },]
+    members: [
+      {
+        username: "Stavros",
+        password: "password5",
+        email: "stavros@stavros.com",
+      },
+    ],
   },
   {
     name: "Group trip",
@@ -89,10 +106,27 @@ const seedTrips = [
         email: "stavros@stavros.com",
       },
     ],
-    activities: ["theatre", "golfing"],
-    travel: ["plane at 1pm", "taxi at 6pm"],
-    stay: ["Random Inn"],
-  }
+    activities: [{ startdate: "date", name: "golfing", info: "golf-course" }],
+    travel: [
+      {
+        startdate: "date",
+        leavetime: "time",
+        arrivedate: "date",
+        arrivetime: "time",
+        type: "plane",
+        info: "Heathrow",
+      },
+    ],
+    stay: [
+      {
+        startdate: "date",
+        endate: "date",
+        name: "hotel coder",
+        type: "hotel",
+        info: "address",
+      },
+    ],
+  },
 ];
 
 const seedDB = async () => {
