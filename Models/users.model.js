@@ -1,6 +1,6 @@
 const { User } = require("../db/data/dataSchemas");
 
-exports.fetchUser = async () => {
+exports.fetchUsers = async () => {
   const data = await User.find();
   return data;
 };

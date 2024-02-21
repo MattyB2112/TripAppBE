@@ -18,21 +18,21 @@ beforeEach(async () => {
 
 describe("/GET", () => {
   test("GET/user returns user data", async () => {
-    const response = await request(app).get("/user");
+    const response = await request(app).get("/users");
     const { users } = response.body;
 
     expect(response.status).toBe(200);
   });
 
   test("GET /trip returns trip data", async () => {
-    const response = await request(app).get("/trip");
+    const response = await request(app).get("/trips");
     const { trips } = response.body;
 
     expect(response.status).toBe(200);
   });
 
   test("GET /trip/:trip_id returns a specific trip", async () => {
-    const response = await request(app).get("/trip");
+    const response = await request(app).get("/trips");
     const { trips } = response.body;
 
     const tripId = trips[0]._id;
@@ -76,7 +76,7 @@ describe("/GET", () => {
       __v: 0,
     };
 
-    const data = await request(app).get(`/trip/${tripId}`);
+    const data = await request(app).get(`/trips/${tripId}`);
     const tripById = data._body.trip;
     expect(response.status).toBe(200);
     expect(tripById._id).toEqual(expectedTrip._id);
@@ -89,7 +89,7 @@ describe("/GET", () => {
     expect(tripById.__v).toEqual(expectedTrip.__v);
   });
   test("GET: 404 - A valid but non-existent trip id returns an error message", async () => {
-    const response = await request(app).get(`/trip/3DE0823C2F96376780BC0D77`);
+    const response = await request(app).get(`/trips/3DE0823C2F96376780BC0D77`);
     expect(response.status).toBe(404);
     expect(response._body.msg).toBe("Trip not found");
   });
@@ -110,7 +110,7 @@ describe("POST", () => {
       members: [signedInUserObj],
     };
 
-    const response = await request(app).post("/trip").send(newTrip);
+    const response = await request(app).post("/trips").send(newTrip);
     expect(response._body.newTripData).toHaveProperty("name");
     expect(response._body.newTripData).toHaveProperty("startdate");
     expect(response._body.newTripData).toHaveProperty("enddate");
@@ -145,7 +145,7 @@ describe("POST /user", () => {
       password: "password10",
       email: "jenny@fromtheblock.com",
     };
-    const response = await request(app).post("/user").send(userToAdd);
+    const response = await request(app).post("/users").send(userToAdd);
     const { newUser } = response._body;
     expect(response.status).toBe(201);
     expect(newUser).toHaveProperty("username");
@@ -158,14 +158,14 @@ describe("POST /user", () => {
       password: "password",
       email: "mattb@matt.com",
     };
-    const response = await request(app).post("/user").send(userToAdd);
+    const response = await request(app).post("/users").send(userToAdd);
     expect(response.status).toBe(400);
   });
 });
 
 describe("/PATCH /trips/:tripbyId/activity", () => {
   test("should update trips activity pro document", async () => {
-    const responseId = await request(app).get("/trip");
+    const responseId = await request(app).get("/trips");
     const { trips } = responseId.body;
 
     const tripId = trips[0]._id;
@@ -177,11 +177,11 @@ describe("/PATCH /trips/:tripbyId/activity", () => {
     };
 
     const response = await request(app)
-      .patch(`/trip/${tripId}/activity`)
+      .patch(`/trips/${tripId}/activities`)
       .send(activity);
     expect(response.status).toBe(204);
 
-    const data = await request(app).get(`/trip/${tripId}`);
+    const data = await request(app).get(`/trips/${tripId}`);
     const tripById = data._body.trip;
     console.log(data, "data");
     expect(tripById.activities).toHaveLength(2);
@@ -190,7 +190,7 @@ describe("/PATCH /trips/:tripbyId/activity", () => {
 
 describe("PATCH /trips/:tripbyid/members", () => {
   test("adds member to members array of a given trip", async () => {
-    const responseId = await request(app).get("/trip");
+    const responseId = await request(app).get("/trips");
     const { trips } = responseId.body;
 
     const tripId = trips[1]._id;
@@ -201,11 +201,11 @@ describe("PATCH /trips/:tripbyid/members", () => {
     };
 
     const response = await request(app)
-      .patch(`/trip/${tripId}/member`)
+      .patch(`/trips/${tripId}/members`)
       .send({ member });
     expect(response.status).toBe(204);
 
-    const data = await request(app).get(`/trip/${tripId}`);
+    const data = await request(app).get(`/trips/${tripId}`);
     const tripById = data._body.trip;
     expect(tripById.members).toHaveLength(2);
   });
@@ -213,7 +213,7 @@ describe("PATCH /trips/:tripbyid/members", () => {
 
 describe("PATCH", () => {
   test("patching travel on a trip returns new travel object", async () => {
-    const response = await request(app).get("/trip");
+    const response = await request(app).get("/trips");
     const { trips } = response.body;
 
     const tripId = trips[0]._id;
@@ -227,10 +227,10 @@ describe("PATCH", () => {
     };
 
     const result = await request(app)
-      .patch(`/trip/${tripId}/travel`)
+      .patch(`/trips/${tripId}/travel`)
       .send(travelToAdd);
 
-    const updatedResponse = await request(app).get("/trip");
+    const updatedResponse = await request(app).get("/trips");
     const updatedTrip = updatedResponse.body.trips[0];
 
     expect(result.status).toBe(204);
@@ -238,7 +238,7 @@ describe("PATCH", () => {
   });
 
   test("patching stay on a trip updates stay on that trip", async () => {
-    const response = await request(app).get("/trip");
+    const response = await request(app).get("/trips");
     const { trips } = response.body;
 
     const tripId = trips[0]._id;
@@ -251,10 +251,10 @@ describe("PATCH", () => {
     };
 
     const result = await request(app)
-      .patch(`/trip/${tripId}/stay`)
+      .patch(`/trips/${tripId}/stay`)
       .send(stayToAdd);
 
-    const updatedResponse = await request(app).get("/trip");
+    const updatedResponse = await request(app).get("/trips");
     const updatedTrip = updatedResponse.body.trips[0];
 
     expect(result.status).toBe(204);

@@ -1,12 +1,12 @@
 const {
-  fetchUser,
+  fetchUsers,
   fetchUserByUsername,
   createUser,
 } = require("../Models/users.model");
 
-exports.getUser = async (req, res, next) => {
+exports.getUsers = async (req, res, next) => {
   try {
-    const users = await fetchUser();
+    const users = await fetchUsers();
     res.status(200).send({ users: users });
   } catch (error) {
     if (error.status === 404) {
