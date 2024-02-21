@@ -73,6 +73,7 @@ const seedTrips = [
         email: "stavros@stavros.com",
       },
     ],
+    activities: [{ startdate: "date", name: "dancing", info: "town square" }],
   },
   {
     name: "Group trip",

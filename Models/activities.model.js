@@ -16,3 +16,21 @@ exports.removeActivity = async (trip_id, activityToDelete) => {
   );
   return data;
 };
+
+exports.editActivity = async (trip_id, activity) => {
+  const testActivity = {
+    startdate: "date",
+    name: "dancing",
+    info: "town square",
+  };
+
+  const keyValue = Object.entries(activity);
+  console.log(keyValue, "<--- keys");
+
+  console.log(activity, "<--- activity in model");
+  const data = await Trip.updateOne(
+    { _id: trip_id },
+    { $set: { activities: { ...testActivity, activity } } }
+  );
+  return data;
+};

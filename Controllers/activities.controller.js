@@ -1,4 +1,8 @@
-const { addActivity, removeActivity } = require("../Models/activities.model");
+const {
+  addActivity,
+  removeActivity,
+  editActivity,
+} = require("../Models/activities.model");
 
 exports.setActivity = async (req, res, next) => {
   const { trip_id } = req.params;
@@ -28,6 +32,17 @@ exports.deleteActivity = async (req, res, next) => {
     }
   } catch (error) {
     console.log(error);
+    next(error);
+  }
+};
+
+exports.patchActivity = async (req, res, next) => {
+  try {
+    const { trip_id } = req.params;
+    const activity = req.body;
+    const data = await editActivity(trip_id, activity);
+    res.status(200).send({ data: data });
+  } catch (error) {
     next(error);
   }
 };

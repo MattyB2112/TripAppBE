@@ -262,8 +262,27 @@ describe("POST", () => {
   });
 });
 
+describe("PATCH", () => {
+  describe("PATCH /trips/:trip_id/activities", () => {
+    test.only("update trips activity", async () => {
+      const responseId = await request(app).get("/trips");
+      const { trips } = responseId.body;
+
+      const tripId = trips[1]._id;
+
+      const response = await request(app)
+        .patch(`/trips/${tripId}/activities`)
+        .send({ name: "swimming" });
+
+      console.log(response._body);
+      expect(response.status).toBe(200);
+      expect(response.body.activities.name).toHaveProperty("name", "swimming");
+    });
+  });
+});
+
 describe("DELETE", () => {
-  test.only("", async () => {
+  test("", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
 

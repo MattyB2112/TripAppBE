@@ -21,6 +21,7 @@ const { setStay } = require("./Controllers/stay.controllers");
 const {
   setActivity,
   deleteActivity,
+  patchActivity,
 } = require("./Controllers/activities.controller");
 const { setMember } = require("./Controllers/members.controller");
 
@@ -42,6 +43,8 @@ app.post("/trips/:trip_id/members", setMember);
 
 app.post("/trips/:trip_id/travel", setTravel);
 app.post("/trips/:trip_id/stay", setStay);
+
+app.patch("/trips/:trip_id/activities", patchActivity);
 
 app.delete("/trips/:trip_id/activities", deleteActivity);
 
