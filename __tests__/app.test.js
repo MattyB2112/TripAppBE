@@ -155,8 +155,14 @@ describe("/PATCH /trips/tripbyId/activity", () => {
     const activity = "fishing";
     const response = await request(app)
       .patch(`/trip/${tripId}/activity`)
-      .send(activity);
-    console.log(response);
+      .send({ activity });
+    //console.log(response);
     expect(response.status).toBe(200);
+
+    const data = await request(app).get(`/trip/${tripId}`);
+    const tripById = data._body.trip;
+    expect(tripById.activities).toHaveLength(4)
+
+
   });
 });

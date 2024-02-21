@@ -23,6 +23,9 @@ exports.addTrip = async (tripData) => {
   return response
 }
 
-exports.addActivity = async () => {
-  console.log('Model');
+exports.addActivity = async (trip_id, activity) => {
+  //console.log('Model');
+  const data = await Trip.updateOne({ trip_id }, { $push: { activities: activity } })
+  console.log(data, "data in model")
+  return data
 }

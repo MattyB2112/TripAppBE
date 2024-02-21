@@ -45,8 +45,28 @@ exports.postTrip = async (req, res, next) => {
 };
 
 exports.patchActivity = async (req, res, next) => {
+  const { trip_id } = req.params
+  const { activity } = req.body;
+  console.log(activity, "should be fishing")
   try {
-    addActivity();
     console.log("controller");
-  } catch (error) {}
+    const newActivityData = await addActivity(trip_id, activity)
+    //send back all activities on that trip
+    res.status(200).send({ newActivityData: newActivityData })
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
 };
+
+
+//
+//activities: {
+//   [
+//   {
+//   startdate: "date"
+//   name: "golfing"
+//   info : "golf-course"
+//    }
+//   ]
+// }
