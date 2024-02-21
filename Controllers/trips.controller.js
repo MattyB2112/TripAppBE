@@ -3,6 +3,7 @@ const {
   fetchTripById,
   addTrip,
   addActivity,
+  addMember
 } = require("../Models/trips.model");
 
 exports.getTrip = async (req, res, next) => {
@@ -44,29 +45,36 @@ exports.postTrip = async (req, res, next) => {
   }
 };
 
-exports.patchActivity = async (req, res, next) => {
+exports.setActivity = async (req, res, next) => {
   const { trip_id } = req.params
-  const { activity } = req.body;
-  console.log(activity, "should be fishing")
+  const activity = req.body;
   try {
-    console.log("controller");
-    const newActivityData = await addActivity(trip_id, activity)
-    //send back all activities on that trip
-    res.status(200).send({ newActivityData: newActivityData })
+
+    const data = await addActivity(trip_id, activity)
+    if (data.acknowledged === true && data.modifiedCount > 0) {
+      res.status(204).send({ data: data })
+    }
+    else {
+      res.status(404).send("Activity not added!")
+    }
   } catch (error) {
     console.log(error)
     next(error)
   }
 };
 
-
-//
-//activities: {
-//   [
-//   {
-//   startdate: "date"
-//   name: "golfing"
-//   info : "golf-course"
-//    }
-//   ]
-// }
+exports.setMembers = async (req, res, next) => {
+  const { trip_id } = req.params
+  const member = req.body;
+  try {
+    const data = await addMember(trip_id, member)
+    if (data.acknowledged === true && data.modifiedCount > 0) {
+      res.status(204).send({ data: data })
+    } else {
+      res.status(404).send("Member not added!")
+    }
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+}

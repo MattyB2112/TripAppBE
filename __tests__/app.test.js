@@ -54,7 +54,7 @@ describe("/GET", () => {
           email: "justyna@justyna.com",
         },
       ],
-      activities: ["museum", "restaurant", "club"],
+      activities: [{ startdate: "date", name: "museum", info: "town square" }],
       __v: 0,
     };
 
@@ -145,22 +145,46 @@ describe("POST /user", () => {
   });
 });
 
-describe("/PATCH /trips/tripbyId/activity", () => {
+describe("/PATCH /trips/:tripbyId/activity", () => {
   test("should update trips activity pro document", async () => {
     const responseId = await request(app).get("/trip");
     const { trips } = responseId.body;
 
     const tripId = trips[0]._id;
 
-    const activity = { name: "fishing", location: "Trafalgar Square" };
+    const activity = { startdate: "tomorrow", name: "fishing", info: "Trafalgar Square" };
+
     const response = await request(app)
       .patch(`/trip/${tripId}/activity`)
-      .send({ activity });
-    //console.log(response);
-    expect(response.status).toBe(200);
+      .send(activity);
+    expect(response.status).toBe(204);
 
     const data = await request(app).get(`/trip/${tripId}`);
     const tripById = data._body.trip;
-    expect(tripById.activities).toHaveLength(4);
+    console.log(data, "data")
+    expect(tripById.activities).toHaveLength(2);
   });
 });
+
+describe("PATCH /trips/:tripbyid/members", () => {
+  test("adds member to members array of a given trip", async () => {
+    const responseId = await request(app).get("/trip");
+    const { trips } = responseId.body;
+
+    const tripId = trips[1]._id;
+    const member = {
+      username: "Justyna",
+      password: "password2",
+      email: "justyna@justyna.com",
+    };
+
+    const response = await request(app)
+      .patch(`/trip/${tripId}/member`)
+      .send({ member });
+    expect(response.status).toBe(204);
+
+    const data = await request(app).get(`/trip/${tripId}`);
+    const tripById = data._body.trip;
+    expect(tripById.members).toHaveLength(2);
+  })
+})
