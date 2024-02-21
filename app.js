@@ -3,14 +3,20 @@ const mongoose = require("mongoose");
 const socketIO = require("socket.io");
 const http = require("http");
 const {
-    getUser,
-    getUserByUsername,
-    postUser,
+  getUser,
+  getUserByUsername,
+  postUser,
 } = require("./Controllers/users.controller");
-const { getTrip, getTripById, postTrip } = require("./Controllers/trips.controller");
 const {
-    mongoDBErrorHandler,
-    serverErrorHandler,
+  getTrip,
+  getTripById,
+  postTrip,
+  setActivity,
+  setMembers,
+} = require("./Controllers/trips.controller");
+const {
+  mongoDBErrorHandler,
+  serverErrorHandler,
 } = require("./Controllers/errors.controller");
 
 const app = express();
@@ -23,14 +29,13 @@ app.get("/trip", getTrip);
 app.get("/users/:username", getUserByUsername);
 app.get("/trip/:trip_id", getTripById);
 
-app.post("/trip", postTrip)
+app.post("/trip", postTrip);
 app.post("/user", postUser);
+
+app.patch("/trip/:trip_id/activity", setActivity);
+app.patch("/trip/:trip_id/member", setMembers)
 
 app.use(mongoDBErrorHandler);
 app.use(serverErrorHandler);
-
-
-
-
 
 module.exports = server;

@@ -1,5 +1,4 @@
 const { User, Trip } = require("../data/dataSchemas");
-
 const seedUsers = [
   {
     username: "MattB",
@@ -27,7 +26,6 @@ const seedUsers = [
     email: "stavros@stavros.com",
   },
 ];
-
 const seedTrips = [
   {
     name: "Paris",
@@ -46,18 +44,18 @@ const seedTrips = [
         email: "justyna@justyna.com",
       },
     ],
-    activities: [
-      "museum", "restaurant", "club"
-    ]
+    activities: [{ startdate: "date", name: "museum", info: "town square" }],
   },
   {
     name: "Malta",
     admin: "Stavros",
-    members: [{
-      username: "Stavros",
-      password: "password5",
-      email: "stavros@stavros.com",
-    },]
+    members: [
+      {
+        username: "Stavros",
+        password: "password5",
+        email: "stavros@stavros.com",
+      },
+    ],
   },
   {
     name: "Group trip",
@@ -89,17 +87,32 @@ const seedTrips = [
         email: "stavros@stavros.com",
       },
     ],
-    activities: ["theatre", "golfing"],
-    travel: ["plane at 1pm", "taxi at 6pm"],
-    stay: ["Random Inn"],
-  }
+    activities: [{ startdate: "date", name: "golfing", info: "golf-course" }],
+    travel: [
+      {
+        startdate: "date",
+        leavetime: "time",
+        arrivedate: "date",
+        arrivetime: "time",
+        type: "plane",
+        info: "Heathrow",
+      },
+    ],
+    stay: [
+      {
+        startdate: "date",
+        endate: "date",
+        name: "hotel coder",
+        type: "hotel",
+        info: "address",
+      },
+    ],
+  },
 ];
-
 const seedDB = async () => {
   await User.deleteMany({});
   await Trip.deleteMany({});
   await User.insertMany(seedUsers);
   await Trip.insertMany(seedTrips);
 };
-
 module.exports = { seedDB, seedUsers, seedTrips };
