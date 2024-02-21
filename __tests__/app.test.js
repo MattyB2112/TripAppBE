@@ -36,12 +36,30 @@ describe("/GET", () => {
     const { trips } = response.body;
 
     const tripId = trips[0]._id;
+
     const expectedTrip = {
       _id: tripId,
       name: "Paris",
       admin: "Justyna",
-      travel: ["plane at 5pm", "train at 8pm"],
-      stay: ["Hilton for a week", "Ritz for a week"],
+      travel: [
+        {
+          startdate: "date",
+          leavetime: "time",
+          arrivedate: "date",
+          arrivetime: "time",
+          type: "plane",
+          info: "Heathrow",
+        },
+      ],
+      stay: [
+        {
+          startdate: "date",
+          endate: "date",
+          name: "hotel coder",
+          type: "hotel",
+          info: "address",
+        },
+      ],
       members: [
         {
           username: "MattB",
@@ -187,4 +205,53 @@ describe("PATCH /trips/:tripbyid/members", () => {
     const tripById = data._body.trip;
     expect(tripById.members).toHaveLength(2);
   })
-})
+})describe("PATCH", () => {
+  test("patching travel on a trip returns new travel object", async () => {
+    const response = await request(app).get("/trip");
+    const { trips } = response.body;
+
+    const tripId = trips[0]._id;
+    const travelToAdd = {
+      startdate: "24th June",
+      leavetime: "6:45pm",
+      arrivedate: "24th June",
+      arrivetime: "10:30pm",
+      type: "plane",
+      info: "Heathrow",
+    };
+
+    const result = await request(app)
+      .patch(`/trip/${tripId}/travel`)
+      .send(travelToAdd);
+
+    const updatedResponse = await request(app).get("/trip");
+    const updatedTrip = updatedResponse.body.trips[0];
+
+    expect(result.status).toBe(204);
+    expect(updatedTrip.travel[1]).toEqual(travelToAdd);
+  });
+
+  test("patching stay on a trip updates stay on that trip", async () => {
+    const response = await request(app).get("/trip");
+    const { trips } = response.body;
+
+    const tripId = trips[0]._id;
+    const stayToAdd = {
+      startdate: "10th May",
+      endate: "15th May",
+      name: "hotel helloworld",
+      type: "hotel",
+      info: "123 hello street",
+    };
+
+    const result = await request(app)
+      .patch(`/trip/${tripId}/stay`)
+      .send(stayToAdd);
+
+    const updatedResponse = await request(app).get("/trip");
+    const updatedTrip = updatedResponse.body.trips[0];
+
+    expect(result.status).toBe(204);
+    expect(updatedTrip.stay[1]).toEqual(stayToAdd);
+  });
+});

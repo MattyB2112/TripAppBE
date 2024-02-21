@@ -30,8 +30,25 @@ const seedTrips = [
   {
     name: "Paris",
     admin: "Justyna",
-    travel: ["plane at 5pm", "train at 8pm"],
-    stay: ["Hilton for a week", "Ritz for a week"],
+    travel: [
+      {
+        startdate: "date",
+        leavetime: "time",
+        arrivedate: "date",
+        arrivetime: "time",
+        type: "plane",
+        info: "Heathrow",
+      },
+    ],
+    stay: [
+      {
+        startdate: "date",
+        endate: "date",
+        name: "hotel coder",
+        type: "hotel",
+        info: "address",
+      },
+    ],
     members: [
       {
         username: "MattB",

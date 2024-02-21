@@ -18,6 +18,8 @@ const {
   mongoDBErrorHandler,
   serverErrorHandler,
 } = require("./Controllers/errors.controller");
+const { setTravel } = require("./Controllers/travel.controller");
+const { setStay } = require("./Controllers/stay.controllers");
 
 const app = express();
 const server = http.createServer(app);
@@ -33,7 +35,10 @@ app.post("/trip", postTrip);
 app.post("/user", postUser);
 
 app.patch("/trip/:trip_id/activity", setActivity);
-app.patch("/trip/:trip_id/member", setMembers)
+app.patch("/trip/:trip_id/member", setMembers);
+
+app.patch("/trip/:trip_id/travel", setTravel);
+app.patch("/trip/:trip_id/stay", setStay);
 
 app.use(mongoDBErrorHandler);
 app.use(serverErrorHandler);
