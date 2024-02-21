@@ -1,11 +1,11 @@
-const { updateTripStay } = require("../Models/stay.model");
+const { addStay } = require("../Models/stay.model");
 
-exports.patchTripStay = async (req, res, next) => {
+exports.setStay = async (req, res, next) => {
   const stayData = req.body;
   const { trip_id } = req.params;
 
   try {
-    const data = await updateTripStay(trip_id, stayData);
+    const data = await addStay(trip_id, stayData);
     if (data.acknowledged === true && data.modifiedCount > 0) {
       res.status(204).send({ data: data });
     } else {

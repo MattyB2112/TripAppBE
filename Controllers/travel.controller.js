@@ -1,11 +1,11 @@
-const { updateTripTravel } = require("../Models/travel.model");
+const { addTravel } = require("../Models/travel.model");
 
-exports.patchTripTravel = async (req, res, next) => {
+exports.setTravel = async (req, res, next) => {
   const travelData = req.body;
   const { trip_id } = req.params;
 
   try {
-    const data = await updateTripTravel(trip_id, travelData);
+    const data = await addTravel(trip_id, travelData);
     if (data.acknowledged === true && data.modifiedCount > 0) {
       res.status(204).send({ data: data });
     } else {

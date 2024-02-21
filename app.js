@@ -16,8 +16,8 @@ const {
   mongoDBErrorHandler,
   serverErrorHandler,
 } = require("./Controllers/errors.controller");
-const { patchTripTravel } = require("./Controllers/travel.controller");
-const { patchTripStay } = require("./Controllers/stay.controllers");
+const { setTravel } = require("./Controllers/travel.controller");
+const { setStay } = require("./Controllers/stay.controllers");
 
 const app = express();
 const server = http.createServer(app);
@@ -32,8 +32,8 @@ app.get("/trip/:trip_id", getTripById);
 app.post("/trip", postTrip);
 app.post("/user", postUser);
 
-app.patch("/trip/:trip_id/travel", patchTripTravel);
-app.patch("/trip/:trip_id/stay", patchTripStay);
+app.patch("/trip/:trip_id/travel", setTravel);
+app.patch("/trip/:trip_id/stay", setStay);
 
 app.use(mongoDBErrorHandler);
 app.use(serverErrorHandler);
