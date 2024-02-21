@@ -152,7 +152,7 @@ describe("/PATCH /trips/tripbyId/activity", () => {
 
     const tripId = trips[0]._id;
 
-    const activity = "fishing";
+    const activity = { name: "fishing", location: "Trafalgar Square" };
     const response = await request(app)
       .patch(`/trip/${tripId}/activity`)
       .send({ activity });
@@ -161,8 +161,6 @@ describe("/PATCH /trips/tripbyId/activity", () => {
 
     const data = await request(app).get(`/trip/${tripId}`);
     const tripById = data._body.trip;
-    expect(tripById.activities).toHaveLength(4)
-
-
+    expect(tripById.activities).toHaveLength(4);
   });
 });
