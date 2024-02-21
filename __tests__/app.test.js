@@ -163,7 +163,7 @@ describe("POST /user", () => {
   });
 });
 
-describe("/PATCH /trips/:tripbyId/activity", () => {
+describe("/POST /trips/:tripbyId/activity", () => {
   test("should update trips activity pro document", async () => {
     const responseId = await request(app).get("/trips");
     const { trips } = responseId.body;
@@ -177,7 +177,7 @@ describe("/PATCH /trips/:tripbyId/activity", () => {
     };
 
     const response = await request(app)
-      .patch(`/trips/${tripId}/activities`)
+      .post(`/trips/${tripId}/activities`)
       .send(activity);
     expect(response.status).toBe(204);
 
@@ -188,7 +188,7 @@ describe("/PATCH /trips/:tripbyId/activity", () => {
   });
 });
 
-describe("PATCH /trips/:tripbyid/members", () => {
+describe("POST /trips/:tripbyid/members", () => {
   test("adds member to members array of a given trip", async () => {
     const responseId = await request(app).get("/trips");
     const { trips } = responseId.body;
@@ -201,7 +201,7 @@ describe("PATCH /trips/:tripbyid/members", () => {
     };
 
     const response = await request(app)
-      .patch(`/trips/${tripId}/members`)
+      .post(`/trips/${tripId}/members`)
       .send({ member });
     expect(response.status).toBe(204);
 
@@ -211,7 +211,7 @@ describe("PATCH /trips/:tripbyid/members", () => {
   });
 });
 
-describe("PATCH", () => {
+describe("POST", () => {
   test("patching travel on a trip returns new travel object", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
@@ -227,7 +227,7 @@ describe("PATCH", () => {
     };
 
     const result = await request(app)
-      .patch(`/trips/${tripId}/travel`)
+      .post(`/trips/${tripId}/travel`)
       .send(travelToAdd);
 
     const updatedResponse = await request(app).get("/trips");
@@ -251,7 +251,7 @@ describe("PATCH", () => {
     };
 
     const result = await request(app)
-      .patch(`/trips/${tripId}/stay`)
+      .post(`/trips/${tripId}/stay`)
       .send(stayToAdd);
 
     const updatedResponse = await request(app).get("/trips");
@@ -259,5 +259,29 @@ describe("PATCH", () => {
 
     expect(result.status).toBe(204);
     expect(updatedTrip.stay[1]).toEqual(stayToAdd);
+  });
+});
+
+describe("DELETE", () => {
+  test.only("", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+
+    const tripId = trips[2]._id;
+    const activityToDelete = {
+      startdate: "dateone",
+      name: "banana",
+      info: "banana museum",
+    };
+
+    const result = await request(app)
+      .delete(`/trips/${tripId}/activities`)
+      .send(activityToDelete);
+
+    const updatedResponse = await request(app).get("/trips");
+    const updatedTrip = updatedResponse.body.trips[2];
+
+    expect(result.status).toBe(204);
+    expect(updatedTrip.activities).toHaveLength(1);
   });
 });

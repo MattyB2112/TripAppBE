@@ -18,7 +18,10 @@ const {
 } = require("./Controllers/errors.controller");
 const { setTravel } = require("./Controllers/travel.controller");
 const { setStay } = require("./Controllers/stay.controllers");
-const { setActivity } = require("./Controllers/activities.controller");
+const {
+  setActivity,
+  deleteActivity,
+} = require("./Controllers/activities.controller");
 const { setMember } = require("./Controllers/members.controller");
 
 const app = express();
@@ -34,11 +37,13 @@ app.get("/trips/:trip_id", getTripById);
 app.post("/trips", postTrip);
 app.post("/users", postUser);
 
-app.patch("/trips/:trip_id/activities", setActivity);
-app.patch("/trips/:trip_id/members", setMember);
+app.post("/trips/:trip_id/activities", setActivity);
+app.post("/trips/:trip_id/members", setMember);
 
-app.patch("/trips/:trip_id/travel", setTravel);
-app.patch("/trips/:trip_id/stay", setStay);
+app.post("/trips/:trip_id/travel", setTravel);
+app.post("/trips/:trip_id/stay", setStay);
+
+app.delete("/trips/:trip_id/activities", deleteActivity);
 
 app.use(mongoDBErrorHandler);
 app.use(serverErrorHandler);

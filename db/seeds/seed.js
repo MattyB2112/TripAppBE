@@ -104,7 +104,10 @@ const seedTrips = [
         email: "stavros@stavros.com",
       },
     ],
-    activities: [{ startdate: "date", name: "golfing", info: "golf-course" }],
+    activities: [
+      { startdate: "date", name: "golfing", info: "golf-course" },
+      { startdate: "dateone", name: "banana", info: "banana museum" },
+    ],
     travel: [
       {
         startdate: "date",

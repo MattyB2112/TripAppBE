@@ -8,3 +8,11 @@ exports.addActivity = async (trip_id, activity) => {
   );
   return data;
 };
+
+exports.removeActivity = async (trip_id, activityToDelete) => {
+  const data = await Trip.updateOne(
+    { _id: trip_id },
+    { $pull: { activities: activityToDelete } }
+  );
+  return data;
+};
