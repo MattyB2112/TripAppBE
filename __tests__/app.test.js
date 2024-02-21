@@ -170,7 +170,11 @@ describe("/PATCH /trips/:tripbyId/activity", () => {
 
     const tripId = trips[0]._id;
 
-    const activity = { startdate: "tomorrow", name: "fishing", info: "Trafalgar Square" };
+    const activity = {
+      startdate: "tomorrow",
+      name: "fishing",
+      info: "Trafalgar Square",
+    };
 
     const response = await request(app)
       .patch(`/trip/${tripId}/activity`)
@@ -179,7 +183,7 @@ describe("/PATCH /trips/:tripbyId/activity", () => {
 
     const data = await request(app).get(`/trip/${tripId}`);
     const tripById = data._body.trip;
-    console.log(data, "data")
+    console.log(data, "data");
     expect(tripById.activities).toHaveLength(2);
   });
 });
@@ -204,8 +208,10 @@ describe("PATCH /trips/:tripbyid/members", () => {
     const data = await request(app).get(`/trip/${tripId}`);
     const tripById = data._body.trip;
     expect(tripById.members).toHaveLength(2);
-  })
-})describe("PATCH", () => {
+  });
+});
+
+describe("PATCH", () => {
   test("patching travel on a trip returns new travel object", async () => {
     const response = await request(app).get("/trip");
     const { trips } = response.body;
