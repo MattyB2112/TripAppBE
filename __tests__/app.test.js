@@ -383,7 +383,7 @@ describe("DELETE", () => {
     expect(result.status).toBe(404);
     expect(result.text).toBe("Travel not deleted!");
   });
-  test.only("deleting a member removes them from the trip", async () => {
+  test("deleting a member removes them from the trip", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
     console.log(trips[0].members);
