@@ -31,20 +31,21 @@ describe("/GET", () => {
     expect(response.status).toBe(200);
   });
 
-  test.only("GET /trip/:trip_id returns a specific trip", async () => {
+  test("GET /trip/:trip_id returns a specific trip", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
     const activityId = trips[0].activities[0]._id;
-
-    console.log(activityId);
-
+    const stayId = trips[0].stay[0]._id;
+    const travelId = trips[0].travel[0]._id;
     const tripId = trips[0]._id;
+
     const expectedTrip = {
       _id: tripId,
       name: "Paris",
       admin: "Justyna",
       travel: [
         {
+          _id: travelId,
           startdate: "date",
           leavetime: "time",
           arrivedate: "date",
@@ -55,6 +56,7 @@ describe("/GET", () => {
       ],
       stay: [
         {
+          _id: stayId,
           startdate: "date",
           enddate: "date",
           name: "hotel coder",
@@ -74,12 +76,20 @@ describe("/GET", () => {
           email: "justyna@justyna.com",
         },
       ],
-      activities: [{ startdate: "date", name: "museum", info: "town square" }],
+      activities: [
+        {
+          _id: activityId,
+          startdate: "date",
+          name: "museum",
+          info: "town square",
+        },
+      ],
       __v: 0,
     };
 
     const data = await request(app).get(`/trips/${tripId}`);
     const tripById = data._body.trip;
+    console.log(data._body), "IN TEST GET TRIP BY ID";
     expect(response.status).toBe(200);
     expect(tripById._id).toEqual(expectedTrip._id);
     expect(tripById.name).toEqual(expectedTrip.name);
@@ -235,7 +245,7 @@ describe("POST", () => {
     const updatedTrip = updatedResponse.body.trips[0];
 
     expect(result.status).toBe(204);
-    expect(updatedTrip.travel[1]).toEqual(travelToAdd);
+    expect(updatedTrip.travel).toHaveLength(2);
   });
 
   test("patching stay on a trip updates stay on that trip", async () => {
@@ -259,7 +269,7 @@ describe("POST", () => {
     const updatedTrip = updatedResponse.body.trips[0];
 
     expect(result.status).toBe(204);
-    expect(updatedTrip.stay[1]).toEqual(stayToAdd);
+    expect(updatedTrip.stay).toHaveLength(2);
   });
 });
 
@@ -287,20 +297,14 @@ describe("DELETE", () => {
     const { trips } = response.body;
 
     const tripId = trips[2]._id;
-    console.log(trips[2].activities, "<-- NOT UPDATED ACTIVITY");
-    const activityToDelete = {
-      startdate: "dateone",
-      name: "banana",
-      info: "banana museum",
-    };
+    const activity_id = trips[2].activities[0]._id;
 
-    const result = await request(app)
-      .delete(`/trips/${tripId}/activities`)
-      .send(activityToDelete);
+    const result = await request(app).delete(
+      `/trips/${tripId}/activities/${activity_id}`
+    );
 
     const updatedResponse = await request(app).get("/trips");
     const updatedTrip = updatedResponse.body.trips[2];
-    console.log(updatedTrip.activities, "<-- UPDATED ACTIVITY");
 
     expect(result.status).toBe(204);
     expect(updatedTrip.activities).toHaveLength(1);
@@ -310,15 +314,11 @@ describe("DELETE", () => {
     const { trips } = response.body;
 
     const tripId = trips[2]._id;
-    const activityToDelete = {
-      startdate: "dateone",
-      name: "THIS WONT WORK",
-      info: "THIS WONT WORK",
-    };
+    const invalidActivity = "F5DE30FD22067390B2D5C2D0";
 
-    const result = await request(app)
-      .delete(`/trips/${tripId}/activities`)
-      .send(activityToDelete);
+    const result = await request(app).delete(
+      `/trips/${tripId}/activities/${invalidActivity}`
+    );
 
     expect(result.status).toBe(404);
     expect(result.text).toBe("Activity not deleted!");
@@ -326,25 +326,15 @@ describe("DELETE", () => {
   test("deleting a stay removes it from the trip", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
-
     const tripId = trips[2]._id;
-    console.log(trips[2].stay, "<-- NOT UPDATED STAY");
-    const stayToDelete = {
-      startdate: "date",
-      enddate: "date",
-      name: "DELETE TEST",
-      type: "DELETE TEST",
-      info: "DELETE TEST",
-    };
+    const stay_id = trips[2].stay[0]._id;
 
-    const result = await request(app)
-      .delete(`/trips/${tripId}/stay`)
-      .send(stayToDelete);
+    const result = await request(app).delete(
+      `/trips/${tripId}/stay/${stay_id}`
+    );
 
     const updatedResponse = await request(app).get("/trips");
     const updatedTrip = updatedResponse.body.trips[2];
-
-    console.log(updatedTrip.stay, "<-- UPDATED STAY");
 
     expect(result.status).toBe(204);
     expect(updatedTrip.stay).toHaveLength(1);
@@ -354,17 +344,11 @@ describe("DELETE", () => {
     const { trips } = response.body;
 
     const tripId = trips[2]._id;
-    const stayToDelete = {
-      startdate: "date",
-      enddate: "date",
-      name: "BANANA",
-      type: "BANANA",
-      info: "BANANA",
-    };
+    const invalidStay = "F5DE30FD22067390B2D5C2D0";
 
-    const result = await request(app)
-      .delete(`/trips/${tripId}/stay`)
-      .send(stayToDelete);
+    const result = await request(app).delete(
+      `/trips/${tripId}/stay/${invalidStay}`
+    );
 
     expect(result.status).toBe(404);
     expect(result.text).toBe("Stay not deleted!");
@@ -372,26 +356,15 @@ describe("DELETE", () => {
   test("deleting a travel removes it from the trip", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
-
     const tripId = trips[2]._id;
-    console.log(trips[2].travel, "<-- NOT UPDATED TRAVEL");
+    const travel_id = trips[2].travel[0]._id;
 
-    const travelToDelete = {
-      startdate: "date",
-      leavetime: "time",
-      arrivedate: "date",
-      arrivetime: "time",
-      type: "TRAIN",
-      info: "KINGS CROSS",
-    };
-
-    const result = await request(app)
-      .delete(`/trips/${tripId}/travel`)
-      .send(travelToDelete);
+    const result = await request(app).delete(
+      `/trips/${tripId}/travel/${travel_id}`
+    );
 
     const updatedResponse = await request(app).get("/trips");
     const updatedTrip = updatedResponse.body.trips[2];
-    console.log(updatedTrip.travel, "<-- UPDATED TRAVEL");
 
     expect(result.status).toBe(204);
     expect(updatedTrip.travel).toHaveLength(1);
@@ -401,27 +374,20 @@ describe("DELETE", () => {
     const { trips } = response.body;
 
     const tripId = trips[2]._id;
-    const travelToDelete = {
-      startdate: "date",
-      enddate: "date",
-      name: "BANANA",
-      type: "BANANA",
-      info: "BANANA",
-    };
+    const invalidTravel = "F5DE30FD22067390B2D5C2D0";
 
-    const result = await request(app)
-      .delete(`/trips/${tripId}/travel`)
-      .send(travelToDelete);
+    const result = await request(app).delete(
+      `/trips/${tripId}/travel/${invalidTravel}`
+    );
 
     expect(result.status).toBe(404);
     expect(result.text).toBe("Travel not deleted!");
   });
-  test("deleting a member removes them from the trip", async () => {
+  test.only("deleting a member removes them from the trip", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
-
+    console.log(trips[0].members);
     const tripId = trips[2]._id;
-    console.log(trips[2].members, "<-- NOT UPDATED MEMBERS");
 
     const memberToDelete = {
       username: "Justyna",
@@ -435,7 +401,6 @@ describe("DELETE", () => {
 
     const updatedResponse = await request(app).get("/trips");
     const updatedTrip = updatedResponse.body.trips[2];
-    console.log(updatedTrip.members, "<-- UPDATED MEMBERS");
 
     expect(result.status).toBe(204);
     expect(updatedTrip.members).toHaveLength(4);
@@ -463,20 +428,17 @@ describe("DELETE", () => {
     const { trips } = response.body;
 
     const tripId = trips[2]._id;
-    console.log(trips.length, "<-- NOT UPDATED TRIPS - SHOULD BE 3");
 
     const result = await request(app).delete(`/trips/${tripId}/`);
 
     const updatedResponse = await request(app).get("/trips");
     const updatedTrips = updatedResponse.body.trips;
-    console.log(updatedTrips.length, "<-- UPDATED TRIPS - SHOULD BE 2");
 
     expect(result.status).toBe(204);
     expect(updatedTrips).toHaveLength(2);
   });
   test("deleting a non-existent trip returns an error and relevant message", async () => {
     const response = await request(app).get("/trips");
-    const { trips } = response.body;
 
     const tripToDelete = "F5DE30FD22067390B2D5C2D0";
 

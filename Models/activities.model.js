@@ -9,10 +9,10 @@ exports.addActivity = async (trip_id, activity) => {
   return data;
 };
 
-exports.removeActivity = async (trip_id, activityToDelete) => {
+exports.removeActivity = async (trip_id, activity_id) => {
   const data = await Trip.updateOne(
     { _id: trip_id },
-    { $pull: { activities: activityToDelete } }
+    { $pull: { activities: { _id: activity_id } } }
   );
   return data;
 };
@@ -20,16 +20,11 @@ exports.removeActivity = async (trip_id, activityToDelete) => {
 exports.editActivity = async (trip_id, activity_id, activityToUpdate) => {
   const trip = await Trip.findById(trip_id);
 
-  console.log(activity_id, "activity ID in MODEL");
-
   const activityToEdit = trip.activities.id(activity_id);
-
-  console.log(activityToEdit, "activity to edit");
 
   Object.assign(activityToEdit, activityToUpdate);
 
   const data = await trip.save();
-  console.log(data, 'data in model');
 
   return data;
 };

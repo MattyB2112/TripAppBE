@@ -21,10 +21,9 @@ exports.setTravel = async (req, res, next) => {
 };
 
 exports.deleteTravel = async (req, res, next) => {
-  const travelToDelete = req.body;
-  const { trip_id } = req.params;
+  const { trip_id, travel_id } = req.params;
   try {
-    const data = await removeTravel(trip_id, travelToDelete);
+    const data = await removeTravel(trip_id, travel_id);
     if (data.acknowledged === true && data.modifiedCount > 0) {
       res.status(204).send({ data: data });
     } else {

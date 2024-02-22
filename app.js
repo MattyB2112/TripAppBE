@@ -47,9 +47,9 @@ app.post("/trips/:trip_id/stay", setStay);
 
 app.patch("/trips/:trip_id/activities/:activity_id", patchActivity);
 
-app.delete("/trips/:trip_id/activities/", deleteActivity);
-app.delete("/trips/:trip_id/stay", deleteStay);
-app.delete("/trips/:trip_id/travel", deleteTravel);
+app.delete("/trips/:trip_id/activities/:activity_id", deleteActivity);
+app.delete("/trips/:trip_id/stay/:stay_id", deleteStay);
+app.delete("/trips/:trip_id/travel/:travel_id", deleteTravel);
 app.delete("/trips/:trip_id/members", deleteMember);
 app.delete("/trips/:trip_id/", deleteTrip);
 

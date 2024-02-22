@@ -130,7 +130,7 @@ const seedTrips = [
     stay: [
       {
         startdate: "date",
-        endate: "date",
+        enddate: "date",
         name: "hotel coder",
         type: "hotel",
         info: "address",

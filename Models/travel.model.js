@@ -8,10 +8,10 @@ exports.addTravel = async (trip_id, travelData) => {
   return data;
 };
 
-exports.removeTravel = async (trip_id, travelToDelete) => {
+exports.removeTravel = async (trip_id, travel_id) => {
   const data = await Trip.updateOne(
     { _id: trip_id },
-    { $pull: { travel: travelToDelete } }
+    { $pull: { travel: { _id: travel_id } } }
   );
   return data;
 };

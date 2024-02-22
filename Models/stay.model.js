@@ -8,10 +8,10 @@ exports.addStay = async (trip_id, stayData) => {
   return data;
 };
 
-exports.removeStay = async (trip_id, stayToDelete) => {
+exports.removeStay = async (trip_id, stay_id) => {
   const data = await Trip.updateOne(
     { _id: trip_id },
-    { $pull: { stay: stayToDelete } }
+    { $pull: { stay: { _id: stay_id } } }
   );
   return data;
 };

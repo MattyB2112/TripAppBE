@@ -21,10 +21,10 @@ exports.setActivity = async (req, res, next) => {
 };
 
 exports.deleteActivity = async (req, res, next) => {
-  const activityToDelete = req.body;
-  const { trip_id } = req.params;
+  const { trip_id, activity_id } = req.params;
   try {
-    const data = await removeActivity(trip_id, activityToDelete);
+    const data = await removeActivity(trip_id, activity_id);
+    console.log(data);
     if (data.acknowledged === true && data.modifiedCount > 0) {
       res.status(204).send({ data: data });
     } else {
