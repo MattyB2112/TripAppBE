@@ -1,4 +1,4 @@
-const { addStay, removeStay } = require("../Models/stay.model");
+const { addStay, removeStay, editStay } = require("../Models/stay.model");
 
 exports.setStay = async (req, res, next) => {
   const stayData = req.body;
@@ -31,6 +31,19 @@ exports.deleteStay = async (req, res, next) => {
     }
   } catch (error) {
     console.log(error);
+    next(error);
+  }
+};
+
+exports.patchStay = async (req, res, next) => {
+  try {
+    const { trip_id, stay_id } = req.params;
+    const stayToUpdate = req.body;
+
+    const data = await editStay(trip_id, stay_id, stayToUpdate);
+
+    res.status(204).send({ data: data });
+  } catch (error) {
     next(error);
   }
 };
