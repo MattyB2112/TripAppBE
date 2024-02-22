@@ -31,12 +31,14 @@ describe("/GET", () => {
     expect(response.status).toBe(200);
   });
 
-  test("GET /trip/:trip_id returns a specific trip", async () => {
+  test.only("GET /trip/:trip_id returns a specific trip", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
+    const activityId = trips[0].activities[0]._id;
+
+    console.log(activityId);
 
     const tripId = trips[0]._id;
-
     const expectedTrip = {
       _id: tripId,
       name: "Paris",
@@ -262,30 +264,19 @@ describe("POST", () => {
 });
 
 describe("PATCH", () => {
-  describe("PATCH /trips/:trip_id/activities", () => {
-    test.only("update trips activity", async () => {
+  describe("PATCH /trips/:trip_id/activities/:activity_id", () => {
+    test("update trips activity", async () => {
       const responseId = await request(app).get("/trips");
       const { trips } = responseId.body;
-      const activityId = trips[1].activities[0]._id;
-      const activityToUpdate = {
-        activityId: activityId,
-        activityToUpdate: { name: "swimming", startdate: "21st Dec" },
-      };
-      console.log(activityId, "ACTIVITY ID TEST LOG");
-      console.log(trips[1].activities, "ACTIVITES TEST LOG");
       const tripId = trips[1]._id;
 
+      const activityId = trips[1].activities[0]._id;
+
       const response = await request(app)
-        .patch(`/trips/${tripId}/activities`)
-        .send(activityToUpdate);
+        .patch(`/trips/${tripId}/activities/${activityId}`)
+        .send({ name: "swimming", info: "test" });
 
-      expect(response.status).toBe(200);
-
-      const updatedResponse = await request(app).get("/trips");
-      console.log(
-        updatedResponse[1].activities,
-        "<-- UPDATED SHOULD SAY SWIMMING"
-      );
+      expect(response.status).toBe(204);
     });
   });
 });

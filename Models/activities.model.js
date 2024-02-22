@@ -17,33 +17,19 @@ exports.removeActivity = async (trip_id, activityToDelete) => {
   return data;
 };
 
-exports.editActivity = async (trip_id, activityId, activityToUpdate) => {
-  const trip = await Trip.findById(activityId);
-  // const tripActivites = trip.[...activities]
-  console.log(trip, "ACTIVITIES MODEL NOT UPDATED");
-  const activityToEdit = trip.activities.id(activityToUpdate._id);
+exports.editActivity = async (trip_id, activity_id, activityToUpdate) => {
+  const trip = await Trip.findById(trip_id);
+
+  console.log(activity_id, "activity ID in MODEL");
+
+  const activityToEdit = trip.activities.id(activity_id);
+
+  console.log(activityToEdit, "activity to edit");
+
   Object.assign(activityToEdit, activityToUpdate);
-  console.log(activityToEdit);
+
   const data = await trip.save();
-  console.log(data);
-  //
-  //
-  //
-  //
-  //
-
-  // const data = await Trip.updateOne(
-  //   { _id: trip_id, "activities._id": activityId },
-  //   {
-  //     $set: {
-  //       "activities.$.name": activityToUpdate.name,
-
-  //       "activities.$.startdate": activityToUpdate.startdate,
-  //     },
-  //   }
-  // );
-  // const updatedTrip = await Trip.findById(trip_id);
-  // console.log(updatedTrip.activities, "ACTIVITIES MODEL UPDATED");
+  console.log(data, 'data in model');
 
   return data;
 };

@@ -38,13 +38,12 @@ exports.deleteActivity = async (req, res, next) => {
 
 exports.patchActivity = async (req, res, next) => {
   try {
-    const { trip_id } = req.params;
-    const { activityId, activityToUpdate } = req.body;
-    console.log(activityToUpdate, "CONTROLLER activity to uodate");
-    console.log(activityId, "controller activity ID");
+    const { trip_id, activity_id } = req.params;
+    const activityToUpdate = req.body;
 
-    const data = await editActivity(trip_id, activityId, activityToUpdate);
-    res.status(200).send({ data: data });
+    const data = await editActivity(trip_id, activity_id, activityToUpdate);
+
+    res.status(204).send({ data: data });
   } catch (error) {
     next(error);
   }
