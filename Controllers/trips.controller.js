@@ -1,4 +1,9 @@
-const { fetchTrips, fetchTripById, addTrip } = require("../Models/trips.model");
+const {
+  fetchTrips,
+  fetchTripById,
+  addTrip,
+  removeTrip,
+} = require("../Models/trips.model");
 
 exports.getTrips = async (req, res, next) => {
   try {
@@ -20,7 +25,6 @@ exports.getTripById = async (req, res, next) => {
     res.status(200).send({ trip: trip });
   } catch (error) {
     if (error.status === 404) {
-      console.log(error);
       const errorMessage = error.message;
       res.status(404).send({ msg: errorMessage });
     } else {
@@ -36,5 +40,20 @@ exports.postTrip = async (req, res, next) => {
     res.status(201).send({ newTripData: newTripData });
   } catch (error) {
     console.log(error);
+  }
+};
+
+exports.deleteTrip = async (req, res, next) => {
+  const { trip_id } = req.params;
+  try {
+    const data = await removeTrip(trip_id);
+    if (data.acknowledged === true && data.deletedCount > 0) {
+      res.status(204).send({ data: data });
+    } else {
+      res.status(404).send("Trip not deleted!");
+    }
+  } catch (error) {
+    console.log(error);
+    next(error);
   }
 };

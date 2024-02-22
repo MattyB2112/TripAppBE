@@ -7,3 +7,11 @@ exports.addMember = async (trip_id, member) => {
   );
   return data;
 };
+
+exports.removeMember = async (trip_id, memberToDelete) => {
+  const data = await Trip.updateOne(
+    { _id: trip_id },
+    { $pull: { members: memberToDelete } }
+  );
+  return data;
+};

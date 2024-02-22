@@ -7,3 +7,11 @@ exports.addTravel = async (trip_id, travelData) => {
   );
   return data;
 };
+
+exports.removeTravel = async (trip_id, travelToDelete) => {
+  const data = await Trip.updateOne(
+    { _id: trip_id },
+    { $pull: { travel: travelToDelete } }
+  );
+  return data;
+};

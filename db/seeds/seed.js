@@ -43,7 +43,7 @@ const seedTrips = [
     stay: [
       {
         startdate: "date",
-        endate: "date",
+        enddate: "date",
         name: "hotel coder",
         type: "hotel",
         info: "address",
@@ -73,7 +73,7 @@ const seedTrips = [
         email: "stavros@stavros.com",
       },
     ],
-    activities: [{ startdate: "date", name: "dancing", info: "town square" }],
+    activities: [{ name: "dancing", startdate: "date", info: "town square" }],
   },
   {
     name: "Group trip",
@@ -118,6 +118,14 @@ const seedTrips = [
         type: "plane",
         info: "Heathrow",
       },
+      {
+        startdate: "date",
+        leavetime: "time",
+        arrivedate: "date",
+        arrivetime: "time",
+        type: "TRAIN",
+        info: "KINGS CROSS",
+      },
     ],
     stay: [
       {
@@ -126,6 +134,13 @@ const seedTrips = [
         name: "hotel coder",
         type: "hotel",
         info: "address",
+      },
+      {
+        startdate: "date",
+        enddate: "date",
+        name: "DELETE TEST",
+        type: "DELETE TEST",
+        info: "DELETE TEST",
       },
     ],
   },

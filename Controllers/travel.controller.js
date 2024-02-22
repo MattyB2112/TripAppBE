@@ -1,4 +1,4 @@
-const { addTravel } = require("../Models/travel.model");
+const { addTravel, removeTravel } = require("../Models/travel.model");
 
 exports.setTravel = async (req, res, next) => {
   const travelData = req.body;
@@ -17,5 +17,21 @@ exports.setTravel = async (req, res, next) => {
     } else {
       next(error);
     }
+  }
+};
+
+exports.deleteTravel = async (req, res, next) => {
+  const travelToDelete = req.body;
+  const { trip_id } = req.params;
+  try {
+    const data = await removeTravel(trip_id, travelToDelete);
+    if (data.acknowledged === true && data.modifiedCount > 0) {
+      res.status(204).send({ data: data });
+    } else {
+      res.status(404).send("Travel not deleted!");
+    }
+  } catch (error) {
+    console.log(error);
+    next(error);
   }
 };

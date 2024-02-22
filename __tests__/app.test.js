@@ -54,7 +54,7 @@ describe("/GET", () => {
       stay: [
         {
           startdate: "date",
-          endate: "date",
+          enddate: "date",
           name: "hotel coder",
           type: "hotel",
           info: "address",
@@ -183,7 +183,6 @@ describe("/POST /trips/:tripbyId/activity", () => {
 
     const data = await request(app).get(`/trips/${tripId}`);
     const tripById = data._body.trip;
-    console.log(data, "data");
     expect(tripById.activities).toHaveLength(2);
   });
 });
@@ -267,25 +266,37 @@ describe("PATCH", () => {
     test.only("update trips activity", async () => {
       const responseId = await request(app).get("/trips");
       const { trips } = responseId.body;
-
+      const activityId = trips[1].activities[0]._id;
+      const activityToUpdate = {
+        activityId: activityId,
+        activityToUpdate: { name: "swimming", startdate: "21st Dec" },
+      };
+      console.log(activityId, "ACTIVITY ID TEST LOG");
+      console.log(trips[1].activities, "ACTIVITES TEST LOG");
       const tripId = trips[1]._id;
 
       const response = await request(app)
         .patch(`/trips/${tripId}/activities`)
-        .send({ name: "swimming" });
+        .send(activityToUpdate);
 
-      console.log(response._body);
       expect(response.status).toBe(200);
+
+      const updatedResponse = await request(app).get("/trips");
+      console.log(
+        updatedResponse[1].activities,
+        "<-- UPDATED SHOULD SAY SWIMMING"
+      );
     });
   });
 });
 
 describe("DELETE", () => {
-  test("", async () => {
+  test("deleting an activity removes it from the database", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
 
     const tripId = trips[2]._id;
+    console.log(trips[2].activities, "<-- NOT UPDATED ACTIVITY");
     const activityToDelete = {
       startdate: "dateone",
       name: "banana",
@@ -298,8 +309,189 @@ describe("DELETE", () => {
 
     const updatedResponse = await request(app).get("/trips");
     const updatedTrip = updatedResponse.body.trips[2];
+    console.log(updatedTrip.activities, "<-- UPDATED ACTIVITY");
 
     expect(result.status).toBe(204);
     expect(updatedTrip.activities).toHaveLength(1);
+  });
+  test("deleting a non-existent activity returns an error and relevant message", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+
+    const tripId = trips[2]._id;
+    const activityToDelete = {
+      startdate: "dateone",
+      name: "THIS WONT WORK",
+      info: "THIS WONT WORK",
+    };
+
+    const result = await request(app)
+      .delete(`/trips/${tripId}/activities`)
+      .send(activityToDelete);
+
+    expect(result.status).toBe(404);
+    expect(result.text).toBe("Activity not deleted!");
+  });
+  test("deleting a stay removes it from the trip", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+
+    const tripId = trips[2]._id;
+    console.log(trips[2].stay, "<-- NOT UPDATED STAY");
+    const stayToDelete = {
+      startdate: "date",
+      enddate: "date",
+      name: "DELETE TEST",
+      type: "DELETE TEST",
+      info: "DELETE TEST",
+    };
+
+    const result = await request(app)
+      .delete(`/trips/${tripId}/stay`)
+      .send(stayToDelete);
+
+    const updatedResponse = await request(app).get("/trips");
+    const updatedTrip = updatedResponse.body.trips[2];
+
+    console.log(updatedTrip.stay, "<-- UPDATED STAY");
+
+    expect(result.status).toBe(204);
+    expect(updatedTrip.stay).toHaveLength(1);
+  });
+  test("deleting a non-existent stay returns an error and relevant message", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+
+    const tripId = trips[2]._id;
+    const stayToDelete = {
+      startdate: "date",
+      enddate: "date",
+      name: "BANANA",
+      type: "BANANA",
+      info: "BANANA",
+    };
+
+    const result = await request(app)
+      .delete(`/trips/${tripId}/stay`)
+      .send(stayToDelete);
+
+    expect(result.status).toBe(404);
+    expect(result.text).toBe("Stay not deleted!");
+  });
+  test("deleting a travel removes it from the trip", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+
+    const tripId = trips[2]._id;
+    console.log(trips[2].travel, "<-- NOT UPDATED TRAVEL");
+
+    const travelToDelete = {
+      startdate: "date",
+      leavetime: "time",
+      arrivedate: "date",
+      arrivetime: "time",
+      type: "TRAIN",
+      info: "KINGS CROSS",
+    };
+
+    const result = await request(app)
+      .delete(`/trips/${tripId}/travel`)
+      .send(travelToDelete);
+
+    const updatedResponse = await request(app).get("/trips");
+    const updatedTrip = updatedResponse.body.trips[2];
+    console.log(updatedTrip.travel, "<-- UPDATED TRAVEL");
+
+    expect(result.status).toBe(204);
+    expect(updatedTrip.travel).toHaveLength(1);
+  });
+  test("deleting a non-existent travel returns an error and relevant message", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+
+    const tripId = trips[2]._id;
+    const travelToDelete = {
+      startdate: "date",
+      enddate: "date",
+      name: "BANANA",
+      type: "BANANA",
+      info: "BANANA",
+    };
+
+    const result = await request(app)
+      .delete(`/trips/${tripId}/travel`)
+      .send(travelToDelete);
+
+    expect(result.status).toBe(404);
+    expect(result.text).toBe("Travel not deleted!");
+  });
+  test("deleting a member removes them from the trip", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+
+    const tripId = trips[2]._id;
+    console.log(trips[2].members, "<-- NOT UPDATED MEMBERS");
+
+    const memberToDelete = {
+      username: "Justyna",
+      password: "password2",
+      email: "justyna@justyna.com",
+    };
+
+    const result = await request(app)
+      .delete(`/trips/${tripId}/members`)
+      .send(memberToDelete);
+
+    const updatedResponse = await request(app).get("/trips");
+    const updatedTrip = updatedResponse.body.trips[2];
+    console.log(updatedTrip.members, "<-- UPDATED MEMBERS");
+
+    expect(result.status).toBe(204);
+    expect(updatedTrip.members).toHaveLength(4);
+  });
+  test("deleting a non-existent member returns an error and relevant message", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+    const tripId = trips[2]._id;
+
+    const memberToDelete = {
+      username: "Johnny Banana",
+      password: "password2",
+      email: "justyna@justyna.com",
+    };
+
+    const result = await request(app)
+      .delete(`/trips/${tripId}/members`)
+      .send(memberToDelete);
+
+    expect(result.status).toBe(404);
+    expect(result.text).toBe("Member not deleted!");
+  });
+  test("deleting an entire trip removes it from the database", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+
+    const tripId = trips[2]._id;
+    console.log(trips.length, "<-- NOT UPDATED TRIPS - SHOULD BE 3");
+
+    const result = await request(app).delete(`/trips/${tripId}/`);
+
+    const updatedResponse = await request(app).get("/trips");
+    const updatedTrips = updatedResponse.body.trips;
+    console.log(updatedTrips.length, "<-- UPDATED TRIPS - SHOULD BE 2");
+
+    expect(result.status).toBe(204);
+    expect(updatedTrips).toHaveLength(2);
+  });
+  test("deleting a non-existent trip returns an error and relevant message", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+
+    const tripToDelete = "F5DE30FD22067390B2D5C2D0";
+
+    const result = await request(app).delete(`/trips/${tripToDelete}/`);
+
+    expect(result.status).toBe(404);
+    expect(result.text).toBe("Trip not deleted!");
   });
 });

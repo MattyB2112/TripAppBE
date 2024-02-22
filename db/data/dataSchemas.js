@@ -23,6 +23,12 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema);
 
+const activitySchema = new mongoose.Schema({
+  name: String,
+  startdate: String,
+  info: String,
+});
+
 const tripSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -61,10 +67,9 @@ const tripSchema = new mongoose.Schema({
   //   },
   // ],
   activities: {
-    type: Array,
+    type: [activitySchema],
     default: [],
   },
-
 });
 
 const Trip = mongoose.model("Trip", tripSchema);

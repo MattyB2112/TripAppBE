@@ -28,7 +28,7 @@ exports.deleteActivity = async (req, res, next) => {
     if (data.acknowledged === true && data.modifiedCount > 0) {
       res.status(204).send({ data: data });
     } else {
-      res.status(404).send("Activity not added!");
+      res.status(404).send("Activity not deleted!");
     }
   } catch (error) {
     console.log(error);
@@ -39,8 +39,11 @@ exports.deleteActivity = async (req, res, next) => {
 exports.patchActivity = async (req, res, next) => {
   try {
     const { trip_id } = req.params;
-    const activity = req.body;
-    const data = await editActivity(trip_id, activity);
+    const { activityId, activityToUpdate } = req.body;
+    console.log(activityToUpdate, "CONTROLLER activity to uodate");
+    console.log(activityId, "controller activity ID");
+
+    const data = await editActivity(trip_id, activityId, activityToUpdate);
     res.status(200).send({ data: data });
   } catch (error) {
     next(error);

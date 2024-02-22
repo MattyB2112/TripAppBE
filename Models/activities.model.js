@@ -17,20 +17,33 @@ exports.removeActivity = async (trip_id, activityToDelete) => {
   return data;
 };
 
-exports.editActivity = async (trip_id, activity) => {
-  const testActivity = {
-    startdate: "date",
-    name: "dancing",
-    info: "town square",
-  };
+exports.editActivity = async (trip_id, activityId, activityToUpdate) => {
+  const trip = await Trip.findById(activityId);
+  // const tripActivites = trip.[...activities]
+  console.log(trip, "ACTIVITIES MODEL NOT UPDATED");
+  const activityToEdit = trip.activities.id(activityToUpdate._id);
+  Object.assign(activityToEdit, activityToUpdate);
+  console.log(activityToEdit);
+  const data = await trip.save();
+  console.log(data);
+  //
+  //
+  //
+  //
+  //
 
-  const keyValue = Object.entries(activity);
-  console.log(keyValue, "<--- keys");
+  // const data = await Trip.updateOne(
+  //   { _id: trip_id, "activities._id": activityId },
+  //   {
+  //     $set: {
+  //       "activities.$.name": activityToUpdate.name,
 
-  console.log(activity, "<--- activity in model");
-  const data = await Trip.updateOne(
-    { _id: trip_id },
-    { $set: { activities: { ...testActivity, ...activity } } }
-  );
+  //       "activities.$.startdate": activityToUpdate.startdate,
+  //     },
+  //   }
+  // );
+  // const updatedTrip = await Trip.findById(trip_id);
+  // console.log(updatedTrip.activities, "ACTIVITIES MODEL UPDATED");
+
   return data;
 };

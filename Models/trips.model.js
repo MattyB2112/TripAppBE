@@ -22,3 +22,8 @@ exports.addTrip = async (tripData) => {
   const response = await newTrip.save();
   return response;
 };
+
+exports.removeTrip = async (trip_id) => {
+  const data = await Trip.deleteOne({ _id: trip_id });
+  return data;
+};
