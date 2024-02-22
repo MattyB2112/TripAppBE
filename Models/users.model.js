@@ -20,6 +20,5 @@ exports.createUser = async (username, password, email) => {
     email: email,
   });
   const data = await newUser.save();
-  console.log(newUser, "USER MODEL");
   return data;
 };

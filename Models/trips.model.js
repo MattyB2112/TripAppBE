@@ -34,6 +34,5 @@ exports.editTrip = async (trip_id, tripToUpdate) => {
   Object.assign(trip, tripToUpdate);
 
   const data = await trip.save();
-  console.log(data, "data in MODEL");
   return data;
 };

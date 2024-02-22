@@ -19,16 +19,11 @@ exports.removeTravel = async (trip_id, travel_id) => {
 exports.editTravel = async (trip_id, travel_id, travelToUpdate) => {
   const trip = await Trip.findById(trip_id);
 
-  console.log(travel_id, "travel ID in MODEL");
-
   const travelToEdit = trip.travel.id(travel_id);
-
-  console.log(travelToEdit, "travel to edit");
 
   Object.assign(travelToEdit, travelToUpdate);
 
   const data = await trip.save();
-  console.log(data, "data in model");
 
   return data;
 };
