@@ -7,3 +7,21 @@ exports.addStay = async (trip_id, stayData) => {
   );
   return data;
 };
+
+exports.removeStay = async (trip_id, stay_id) => {
+  const data = await Trip.updateOne(
+    { _id: trip_id },
+    { $pull: { stay: { _id: stay_id } } }
+  );
+  return data;
+};
+
+exports.editStay = async (trip_id, stay_id, stayToUpdate) => {
+  const trip = await Trip.findById(trip_id);
+  const stayToEdit = trip.stay.id(stay_id);
+
+  Object.assign(stayToEdit, stayToUpdate);
+
+  const data = await trip.save();
+  return data;
+};

@@ -43,7 +43,7 @@ const seedTrips = [
     stay: [
       {
         startdate: "date",
-        endate: "date",
+        enddate: "date",
         name: "hotel coder",
         type: "hotel",
         info: "address",
@@ -66,6 +66,25 @@ const seedTrips = [
   {
     name: "Malta",
     admin: "Stavros",
+    travel: [
+      {
+        startdate: "date",
+        leavetime: "time",
+        arrivedate: "date",
+        arrivetime: "time",
+        type: "plane",
+        info: "Heathrow",
+      },
+    ],
+    stay: [
+      {
+        startdate: "date",
+        enddate: "date",
+        name: "hotel coder",
+        type: "hotel",
+        info: "address",
+      },
+    ],
     members: [
       {
         username: "Stavros",
@@ -73,6 +92,7 @@ const seedTrips = [
         email: "stavros@stavros.com",
       },
     ],
+    activities: [{ name: "dancing", startdate: "date", info: "town square" }],
   },
   {
     name: "Group trip",
@@ -117,14 +137,29 @@ const seedTrips = [
         type: "plane",
         info: "Heathrow",
       },
+      {
+        startdate: "date",
+        leavetime: "time",
+        arrivedate: "date",
+        arrivetime: "time",
+        type: "TRAIN",
+        info: "KINGS CROSS",
+      },
     ],
     stay: [
       {
         startdate: "date",
-        endate: "date",
+        enddate: "date",
         name: "hotel coder",
         type: "hotel",
         info: "address",
+      },
+      {
+        startdate: "date",
+        enddate: "date",
+        name: "DELETE TEST",
+        type: "DELETE TEST",
+        info: "DELETE TEST",
       },
     ],
   },

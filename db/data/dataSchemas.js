@@ -23,6 +23,29 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema);
 
+const activitySchema = new mongoose.Schema({
+  name: String,
+  startdate: String,
+  info: String,
+});
+
+const travelSchema = new mongoose.Schema({
+  startdate: String,
+  leavetime: String,
+  arrivedate: String,
+  arrivetime: String,
+  type: String,
+  info: String,
+});
+
+const staySchema = new mongoose.Schema({
+  startdate: String,
+  enddate: String,
+  name: String,
+  type: String,
+  info: String,
+});
+
 const tripSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -44,11 +67,11 @@ const tripSchema = new mongoose.Schema({
     required: true,
   },
   travel: {
-    type: Array,
+    type: [travelSchema],
     default: [],
   },
   stay: {
-    type: Array,
+    type: [staySchema],
     default: [],
   },
   members: {
@@ -61,10 +84,9 @@ const tripSchema = new mongoose.Schema({
   //   },
   // ],
   activities: {
-    type: Array,
+    type: [activitySchema],
     default: [],
   },
-
 });
 
 const Trip = mongoose.model("Trip", tripSchema);

@@ -22,3 +22,18 @@ exports.addTrip = async (tripData) => {
   const response = await newTrip.save();
   return response;
 };
+
+exports.removeTrip = async (trip_id) => {
+  const data = await Trip.deleteOne({ _id: trip_id });
+  return data;
+};
+
+exports.editTrip = async (trip_id, tripToUpdate) => {
+  const trip = await Trip.findById(trip_id);
+
+  Object.assign(trip, tripToUpdate);
+
+  const data = await trip.save();
+  console.log(data, "data in MODEL");
+  return data;
+};
