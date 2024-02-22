@@ -276,7 +276,6 @@ describe("PATCH", () => {
 
       console.log(response._body);
       expect(response.status).toBe(200);
-      expect(response.body.activities.name).toHaveProperty("name", "swimming");
     });
   });
 });

@@ -30,7 +30,7 @@ exports.editActivity = async (trip_id, activity) => {
   console.log(activity, "<--- activity in model");
   const data = await Trip.updateOne(
     { _id: trip_id },
-    { $set: { activities: { ...testActivity, activity } } }
+    { $set: { activities: { ...testActivity, ...activity } } }
   );
   return data;
 };
