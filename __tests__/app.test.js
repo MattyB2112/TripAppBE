@@ -31,12 +31,12 @@ describe("/GET", () => {
     expect(response.status).toBe(200);
   });
 
-  test.only("GET /trip/:trip_id returns a specific trip", async () => {
+  test("GET /trip/:trip_id returns a specific trip", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
     const activityId = trips[0].activities[0]._id;
-
-    console.log(activityId);
+    const travelId = trips[0].travel[0]._id;
+    const stayId = trips[0].stay[0]._id;
 
     const tripId = trips[0]._id;
     const expectedTrip = {
@@ -45,6 +45,7 @@ describe("/GET", () => {
       admin: "Justyna",
       travel: [
         {
+          _id: travelId,
           startdate: "date",
           leavetime: "time",
           arrivedate: "date",
@@ -55,6 +56,7 @@ describe("/GET", () => {
       ],
       stay: [
         {
+          _id: stayId,
           startdate: "date",
           enddate: "date",
           name: "hotel coder",
@@ -74,7 +76,14 @@ describe("/GET", () => {
           email: "justyna@justyna.com",
         },
       ],
-      activities: [{ startdate: "date", name: "museum", info: "town square" }],
+      activities: [
+        {
+          _id: activityId,
+          startdate: "date",
+          name: "museum",
+          info: "town square",
+        },
+      ],
       __v: 0,
     };
 
@@ -219,6 +228,7 @@ describe("POST", () => {
 
     const tripId = trips[0]._id;
     const travelToAdd = {
+      _id: tripId,
       startdate: "24th June",
       leavetime: "6:45pm",
       arrivedate: "24th June",
@@ -241,11 +251,12 @@ describe("POST", () => {
   test("patching stay on a trip updates stay on that trip", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
-
+    const stayId = trips[1].stay[0]._id;
     const tripId = trips[0]._id;
     const stayToAdd = {
+      _id: stayId,
       startdate: "10th May",
-      endate: "15th May",
+      enddate: "15th May",
       name: "hotel helloworld",
       type: "hotel",
       info: "123 hello street",
@@ -275,6 +286,49 @@ describe("PATCH", () => {
       const response = await request(app)
         .patch(`/trips/${tripId}/activities/${activityId}`)
         .send({ name: "swimming", info: "test" });
+
+      expect(response.status).toBe(204);
+    });
+  });
+  describe("PATCH /trips/:trip_id/travel/:travel_id", () => {
+    test("update trips travel", async () => {
+      const responseId = await request(app).get("/trips");
+      const { trips } = responseId.body;
+      const tripId = trips[1]._id;
+
+      const travelId = trips[1].travel[0]._id;
+
+      const response = await request(app)
+        .patch(`/trips/${tripId}/travel/${travelId}`)
+        .send({ startdate: "1/2/2034", type: "train" });
+
+      expect(response.status).toBe(204);
+    });
+  });
+  describe("PATCH /trips/:trip_id/stay/:stay_id", () => {
+    test("update trips stay", async () => {
+      const responseId = await request(app).get("/trips");
+      const { trips } = responseId.body;
+      const tripId = trips[1]._id;
+
+      const stayId = trips[1].stay[0]._id;
+
+      const response = await request(app)
+        .patch(`/trips/${tripId}/stay/${stayId}`)
+        .send({ startdate: "09-13-2099", type: "wood-cabin" });
+
+      expect(response.status).toBe(204);
+    });
+  });
+  describe("PATCH /trips/:trip_id", () => {
+    test("update trips trip name property", async () => {
+      const responseId = await request(app).get("/trips");
+      const { trips } = responseId.body;
+      const tripId = trips[1]._id;
+
+      const response = await request(app)
+        .patch(`/trips/${tripId}`)
+        .send({ name: "Spain" });
 
       expect(response.status).toBe(204);
     });

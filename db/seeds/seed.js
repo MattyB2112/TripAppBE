@@ -66,6 +66,25 @@ const seedTrips = [
   {
     name: "Malta",
     admin: "Stavros",
+    travel: [
+      {
+        startdate: "date",
+        leavetime: "time",
+        arrivedate: "date",
+        arrivetime: "time",
+        type: "plane",
+        info: "Heathrow",
+      },
+    ],
+    stay: [
+      {
+        startdate: "date",
+        enddate: "date",
+        name: "hotel coder",
+        type: "hotel",
+        info: "address",
+      },
+    ],
     members: [
       {
         username: "Stavros",

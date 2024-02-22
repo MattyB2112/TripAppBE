@@ -1,4 +1,8 @@
-const { addTravel, removeTravel } = require("../Models/travel.model");
+const {
+  addTravel,
+  removeTravel,
+  editTravel,
+} = require("../Models/travel.model");
 
 exports.setTravel = async (req, res, next) => {
   const travelData = req.body;
@@ -32,6 +36,19 @@ exports.deleteTravel = async (req, res, next) => {
     }
   } catch (error) {
     console.log(error);
+    next(error);
+  }
+};
+
+exports.patchTravel = async (req, res, next) => {
+  try {
+    const { trip_id, travel_id } = req.params;
+    const travelToUpdate = req.body;
+
+    const data = await editTravel(trip_id, travel_id, travelToUpdate);
+
+    res.status(204).send({ data: data });
+  } catch (error) {
     next(error);
   }
 };

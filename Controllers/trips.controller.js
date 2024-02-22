@@ -3,6 +3,7 @@ const {
   fetchTripById,
   addTrip,
   removeTrip,
+  editTrip,
 } = require("../Models/trips.model");
 
 exports.getTrips = async (req, res, next) => {
@@ -54,6 +55,19 @@ exports.deleteTrip = async (req, res, next) => {
     }
   } catch (error) {
     console.log(error);
+    next(error);
+  }
+};
+
+exports.patchTrip = async (req, res, next) => {
+  try {
+    const { trip_id } = req.params;
+    const tripToUpdate = req.body;
+
+    const data = await editTrip(trip_id, tripToUpdate);
+
+    res.status(204).send({ data: data });
+  } catch (error) {
     next(error);
   }
 };
