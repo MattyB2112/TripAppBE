@@ -6,10 +6,7 @@ exports.fetchUsers = async () => {
 };
 
 exports.fetchUserByUsername = async (username) => {
-  const data = await User.findOne(
-    { username: username },
-    { password: 0, email: 0 }
-  );
+  const data = await User.findOne({ username: username });
   return data;
 };
 

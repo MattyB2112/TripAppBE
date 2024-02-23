@@ -87,6 +87,7 @@ const seedTrips = [
     ],
     members: [
       {
+        _id: 1234566,
         username: "Stavros",
         password: "password5",
         email: "stavros@stavros.com",
