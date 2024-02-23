@@ -34,12 +34,15 @@ const {
   patchActivity,
 } = require("./Controllers/activities.controller");
 const { setMember, deleteMember } = require("./Controllers/members.controller");
-
+const getSlash = () => {
+  return "Hello world!";
+};
 const app = express();
 const server = http.createServer(app);
 
 app.use(express.json());
 
+app.get("/", getSlash);
 app.get("/users", getUsers);
 app.get("/trips", getTrips);
 app.get("/users/:username", getUserByUsername);
