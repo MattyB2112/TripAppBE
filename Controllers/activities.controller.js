@@ -24,7 +24,6 @@ exports.deleteActivity = async (req, res, next) => {
   const { trip_id, activity_id } = req.params;
   try {
     const data = await removeActivity(trip_id, activity_id);
-    console.log(data);
     if (data.acknowledged === true && data.modifiedCount > 0) {
       res.status(204).send({ data: data });
     } else {

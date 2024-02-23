@@ -89,7 +89,6 @@ describe("GET", () => {
 
     const data = await request(app).get(`/trips/${tripId}`);
     const tripById = data._body.trip;
-    console.log(data._body), "IN TEST GET TRIP BY ID";
     expect(response.status).toBe(200);
     expect(tripById._id).toEqual(expectedTrip._id);
     expect(tripById.name).toEqual(expectedTrip.name);
@@ -204,7 +203,6 @@ describe("POST /trips/:tripbyid/", () => {
 
     const data = await request(app).get(`/trips/${tripId}`);
     const tripById = data._body.trip;
-    console.log(tripById, "TEST TRIP AFTER ADDING MEMBER");
     expect(tripById.members).toHaveLength(2);
 
     const addSameMember = await request(app)
@@ -469,7 +467,6 @@ describe("DELETE /trips/:trip_id/", () => {
   test("/members/:member_id - removes a member from the trip", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
-    console.log(trips[0].members);
     const tripId = trips[2]._id;
 
     const memberToDelete = {
