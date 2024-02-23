@@ -2,9 +2,9 @@ const { addMember, removeMember } = require("../Models/members.model");
 
 exports.setMember = async (req, res, next) => {
   const { trip_id } = req.params;
-  const member = req.body;
+  const { userId } = req.body;
   try {
-    const data = await addMember(trip_id, member);
+    const data = await addMember(trip_id, userId);
     if (data.acknowledged === true && data.modifiedCount > 0) {
       res.status(204).send({ data: data });
     } else {
