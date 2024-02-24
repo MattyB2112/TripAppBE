@@ -1,7 +1,10 @@
 const express = require("express");
-const mongoose = require("mongoose");
-const socketIO = require("socket.io");
-const http = require("http");
+const cors = require("cors");
+// const mongoose = require("mongoose");
+// const socketIO = require("socket.io");
+// const http = require("http");
+
+const connectDB = require("./db/connect");
 const {
   getUsers,
   getUserByUsername,
@@ -34,15 +37,14 @@ const {
   patchActivity,
 } = require("./Controllers/activities.controller");
 const { setMember, deleteMember } = require("./Controllers/members.controller");
-const getSlash = () => {
-  return "Hello world!";
-};
-const app = express();
-const server = http.createServer(app);
 
+connectDB();
+const app = express();
+const port = process.env.PORT || 9090;
+
+app.use(cors());
 app.use(express.json());
 
-app.get("/", getSlash);
 app.get("/users", getUsers);
 app.get("/trips", getTrips);
 app.get("/users/:username", getUserByUsername);
@@ -66,7 +68,22 @@ app.delete("/trips/:trip_id/travel/:travel_id", deleteTravel);
 app.delete("/trips/:trip_id/members", deleteMember);
 app.delete("/trips/:trip_id/", deleteTrip);
 
+app.use("/", (req, res) => {
+  return res.json({
+    message: "Welcome to the trip app API!",
+  });
+});
+
 app.use(mongoDBErrorHandler);
 app.use(serverErrorHandler);
+
+const server = app.listen(port, () =>
+  console.log(`server listening on ${port}`)
+);
+
+process.on("unhandledRejection", (error, promise) => {
+  console.log(`Logged Error: ${error}`);
+  server.close(() => process.exit(1));
+});
 
 module.exports = server;
