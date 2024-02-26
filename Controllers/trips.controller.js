@@ -34,13 +34,17 @@ exports.getTripById = async (req, res, next) => {
   }
 };
 
+//{newtrip: TRIPINFO, loggedin: USERDATA}
+
 exports.postTrip = async (req, res, next) => {
-  const newTrip = req.body;
+  const { newTrip, signedInUser } = req.body;
   try {
-    const newTripData = await addTrip(newTrip);
+    const newTripData = await addTrip(newTrip, signedInUser);
+    console.log(newTripData);
     res.status(201).send({ newTripData: newTripData });
   } catch (error) {
     console.log(error);
+    next(error);
   }
 };
 

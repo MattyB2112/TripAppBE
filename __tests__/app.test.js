@@ -5,11 +5,12 @@ const URITest = "mongodb://localhost:27017/TripAppTEST";
 const { seedDB } = require("../db/seeds/seed");
 
 beforeAll(async () => {
+  await mongoose.connection.close();
   await mongoose.connect(URITest);
 });
 
-afterAll(() => {
-  return mongoose.connection.close();
+afterAll(async () => {
+  await mongoose.connection.close();
 });
 
 beforeEach(async () => {
@@ -117,21 +118,23 @@ describe("GET", () => {
 });
 
 describe("POST", () => {
-  test("/trip", async () => {
-    const signedInUser = "Lala";
-    const signedInUserObj = {
+  test.only("/trip", async () => {
+    const signedInUser = {
+      _id: "65dc87145dcd630956190085",
       username: "Lala",
       password: "password3",
       email: "lala@lala.com",
+      isAdmin: false,
+      __v: 0,
     };
 
     const newTrip = {
       name: "Big fun day",
-      admin: signedInUser,
-      members: [signedInUserObj],
+      admin: signedInUser.username,
     };
+    const newTripObj = { newTrip: newTrip, signedInUser };
 
-    const response = await request(app).post("/trips").send(newTrip);
+    const response = await request(app).post("/trips").send(newTripObj);
     expect(response._body.newTripData).toHaveProperty("name");
     expect(response._body.newTripData).toHaveProperty("startdate");
     expect(response._body.newTripData).toHaveProperty("enddate");
@@ -471,8 +474,8 @@ describe("DELETE /trips/:trip_id/", () => {
 
     const memberToDelete = {
       username: "Justyna",
-      password: "password2",
-      email: "justyna@justyna.com",
+      // password: "password2",
+      // email: "justyna@justyna.com",
     };
 
     const result = await request(app)

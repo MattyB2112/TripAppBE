@@ -17,9 +17,11 @@ exports.fetchTripById = async (trip_id) => {
   }
 };
 
-exports.addTrip = async (tripData) => {
+exports.addTrip = async (tripData, signedInUser) => {
   const newTrip = new Trip(tripData);
+  newTrip.members.push(signedInUser);
   const response = await newTrip.save();
+  // console.log(response, "MODEL");
   return response;
 };
 
