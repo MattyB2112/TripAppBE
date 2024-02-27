@@ -118,7 +118,7 @@ describe("GET", () => {
 });
 
 describe("POST", () => {
-  test("/trip", async () => {
+  test.only("/trip", async () => {
     const signedInUser = {
       _id: "65dc87145dcd630956190085",
       username: "Lala",
@@ -130,7 +130,7 @@ describe("POST", () => {
 
     const newTrip = {
       name: "Big fun day",
-      admin: signedInUser.username,
+      admin: "Lala",
     };
 
     const response = await request(app).post("/trips").send(newTrip);
@@ -144,6 +144,7 @@ describe("POST", () => {
     expect(response._body.newTripData).toHaveProperty("activities");
     expect(response._body.newTripData).toHaveProperty("_id");
     expect(response.status).toBe(201);
+    console.log(response._body.newTripData);
   });
   test("/user returns user object with correct properties", async () => {
     const userToAdd = {

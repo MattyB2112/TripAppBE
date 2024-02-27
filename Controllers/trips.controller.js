@@ -40,6 +40,7 @@ exports.postTrip = async (req, res, next) => {
   const newTrip = req.body;
   try {
     const newTripData = await addTrip(newTrip);
+    console.log(newTripData, "<-- CONTROLLER RESULT");
     res.status(201).send({ newTripData: newTripData });
   } catch (error) {
     console.log(error);

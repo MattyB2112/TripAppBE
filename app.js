@@ -41,7 +41,6 @@ const { setMember, deleteMember } = require("./Controllers/members.controller");
 
 connectDB();
 const app = express();
-const port = process.env.PORT || 9090;
 
 app.use(cors());
 app.use(express.json());

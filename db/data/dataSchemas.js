@@ -75,6 +75,7 @@ const tripSchema = new mongoose.Schema({
     default: [],
   },
   members: {
+    default: [],
     type: Array,
   },
   // [
