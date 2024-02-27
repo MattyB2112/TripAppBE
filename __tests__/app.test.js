@@ -34,7 +34,7 @@ describe("GET /trips", () => {
   });
 });
 
-describe("GET /trip/:trip_id", () => {
+describe("GET /trips/:trip_id", () => {
   test("Returns data for a specific trip", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
