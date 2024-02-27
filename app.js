@@ -1,9 +1,11 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-// const mongoose = require("mongoose");
-// const socketIO = require("socket.io");
+// //// const socketIO = require("socket.io");
 // const http = require("http");
+const { createSocketIOServer } = require('./socket');
+const path = require("path");
+const cors = require('cors');
 
 const connectDB = require("./db/connect");
 const {
@@ -41,9 +43,19 @@ const { setMember, deleteMember } = require("./Controllers/members.controller");
 
 // connectDB();
 const app = express();
+const server = http.createServer(app);
+const io = createSocketIOServer(server);
 
-app.use(cors());
+app.use('/socket.io', express.static(__dirname + '/node_modules/socket.io/client-dist'));
+
+const allowedOrigins = [
+  'http://127.0.0.1:5500'
+];
+app.use(cors({
+  origin: allowedOrigins,
+}));
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/users", getUsers);
 app.get("/trips", getTrips);
