@@ -132,10 +132,8 @@ describe("POST", () => {
       name: "Big fun day",
       admin: signedInUser.username,
     };
-    const newTripObj = { newTrip: newTrip, signedInUser };
-    console.log(newTripObj, "TEST DATA");
 
-    const response = await request(app).post("/trips").send(newTripObj);
+    const response = await request(app).post("/trips").send(newTrip);
     expect(response._body.newTripData).toHaveProperty("name");
     expect(response._body.newTripData).toHaveProperty("startdate");
     expect(response._body.newTripData).toHaveProperty("enddate");

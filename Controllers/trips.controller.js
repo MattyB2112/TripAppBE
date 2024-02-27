@@ -37,11 +37,9 @@ exports.getTripById = async (req, res, next) => {
 //{newtrip: TRIPINFO, loggedin: USERDATA}
 
 exports.postTrip = async (req, res, next) => {
-  const { newTrip, signedInUser } = req.body;
-  console.log(newTrip, signedInUser, "CONTROLLER");
+  const newTrip = req.body;
   try {
-    const newTripData = await addTrip(newTrip, signedInUser);
-    console.log(newTripData, "CONTROLLER NEWTRIP DATA");
+    const newTripData = await addTrip(newTrip);
     res.status(201).send({ newTripData: newTripData });
   } catch (error) {
     console.log(error);

@@ -17,9 +17,10 @@ exports.fetchTripById = async (trip_id) => {
   }
 };
 
-exports.addTrip = async (tripData, signedInUser) => {
+exports.addTrip = async (tripData) => {
+  const firstMember = tripData.admin;
   const newTrip = new Trip(tripData);
-  newTrip.members.push(signedInUser);
+  newTrip.members.push({ username: firstMember });
   const response = await newTrip.save();
   // console.log(response, "MODEL");
   return response;
