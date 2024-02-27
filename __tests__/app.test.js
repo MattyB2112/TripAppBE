@@ -263,7 +263,7 @@ describe("POST", () => {
 });
 
 describe("DELETE", () => {
-  test.only("", async () => {
+  test("", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
 

@@ -72,6 +72,12 @@ const Trip = mongoose.model("Trip", tripSchema);
 const chatSchema = new mongoose.Schema({
   messageSender: {
     type: String,
+    required: true,
+  },
+  tripId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Trip',
+    required: true,
   },
   messageContent: {
     type: String,
