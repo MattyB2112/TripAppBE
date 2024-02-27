@@ -2,10 +2,10 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 // //// const socketIO = require("socket.io");
-// const http = require("http");
+const http = require("http");
 const { createSocketIOServer } = require('./socket');
 const path = require("path");
-const cors = require('cors');
+// const cors = require('cors');
 
 const connectDB = require("./db/connect");
 const {
