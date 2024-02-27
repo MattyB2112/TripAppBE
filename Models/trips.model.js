@@ -18,7 +18,24 @@ exports.fetchTripById = async (trip_id) => {
 };
 
 exports.addTrip = async (tripData) => {
+  const firstMember = tripData.admin;
   const newTrip = new Trip(tripData);
+  newTrip.members.push({ username: firstMember });
   const response = await newTrip.save();
+  // console.log(response, "MODEL");
   return response;
+};
+
+exports.removeTrip = async (trip_id) => {
+  const data = await Trip.deleteOne({ _id: trip_id });
+  return data;
+};
+
+exports.editTrip = async (trip_id, tripToUpdate) => {
+  const trip = await Trip.findById(trip_id);
+
+  Object.assign(trip, tripToUpdate);
+
+  const data = await trip.save();
+  return data;
 };

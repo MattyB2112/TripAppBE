@@ -1,8 +1,11 @@
+const connectDB = require("./db/connect");
 const { app, server } = require("./app");
-const { PORT = 9090 } = process.env;
+
+connectDB();
+const PORT = process.env.PORT || 9090;
 const io = require('./socket').createSocketIOServer(server);
 
-server.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log(`listening on port ${PORT}...`);
     console.log(`WebSocket URL: ws://localhost:${PORT}`);
 });

@@ -5,36 +5,39 @@ const URITest = "mongodb://localhost:27017/TripAppTEST";
 const { seedDB } = require("../db/seeds/seed");
 
 beforeAll(async () => {
+  await mongoose.connection.close();
   await mongoose.connect(URITest);
 });
 
-afterAll(() => {
-  return mongoose.connection.close();
+afterAll(async () => {
+  await mongoose.connection.close();
 });
 
 beforeEach(async () => {
   await seedDB();
 });
 
-describe("/GET", () => {
-  test("GET/user returns user data", async () => {
+describe("GET", () => {
+  test("/users returns user data", async () => {
     const response = await request(app).get("/users");
     const { users } = response.body;
 
     expect(response.status).toBe(200);
   });
 
-  test("GET /trip returns trip data", async () => {
+  test("/trips returns trip data", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
 
     expect(response.status).toBe(200);
   });
 
-  test("GET /trip/:trip_id returns a specific trip", async () => {
+  test("/trip/:trip_id returns a specific trip", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
-
+    const activityId = trips[0].activities[0]._id;
+    const stayId = trips[0].stay[0]._id;
+    const travelId = trips[0].travel[0]._id;
     const tripId = trips[0]._id;
 
     const expectedTrip = {
@@ -43,6 +46,7 @@ describe("/GET", () => {
       admin: "Justyna",
       travel: [
         {
+          _id: travelId,
           startdate: "date",
           leavetime: "time",
           arrivedate: "date",
@@ -53,8 +57,9 @@ describe("/GET", () => {
       ],
       stay: [
         {
+          _id: stayId,
           startdate: "date",
-          endate: "date",
+          enddate: "date",
           name: "hotel coder",
           type: "hotel",
           info: "address",
@@ -72,7 +77,14 @@ describe("/GET", () => {
           email: "justyna@justyna.com",
         },
       ],
-      activities: [{ startdate: "date", name: "museum", info: "town square" }],
+      activities: [
+        {
+          _id: activityId,
+          startdate: "date",
+          name: "museum",
+          info: "town square",
+        },
+      ],
       __v: 0,
     };
 
@@ -88,26 +100,37 @@ describe("/GET", () => {
     expect(tripById.activities).toEqual(expectedTrip.activities);
     expect(tripById.__v).toEqual(expectedTrip.__v);
   });
-  test("GET: 404 - A valid but non-existent trip id returns an error message", async () => {
+  test("valid but non-existent trip id returns an error message", async () => {
     const response = await request(app).get(`/trips/3DE0823C2F96376780BC0D77`);
     expect(response.status).toBe(404);
     expect(response._body.msg).toBe("Trip not found");
   });
+  test("/users/:user_id returns user's details", async () => {
+    const response = await request(app).get("/users/MattB");
+    const { user } = response.body;
+    expect(response.status).toBe(200);
+    expect(user.username).toBe("MattB");
+  });
+  test("returns correct error message if user not found", async () => {
+    const response = await request(app).get("/users/MattyBoo");
+    expect(response.status).toBe(404);
+  });
 });
 
 describe("POST", () => {
-  test("POST: /trip", async () => {
-    const signedInUser = "Lala";
-    const signedInUserObj = {
+  test.only("/trip", async () => {
+    const signedInUser = {
+      _id: "65dc87145dcd630956190085",
       username: "Lala",
       password: "password3",
       email: "lala@lala.com",
+      isAdmin: false,
+      __v: 0,
     };
 
     const newTrip = {
       name: "Big fun day",
-      admin: signedInUser,
-      members: [signedInUserObj],
+      admin: "Lala",
     };
 
     const response = await request(app).post("/trips").send(newTrip);
@@ -121,25 +144,9 @@ describe("POST", () => {
     expect(response._body.newTripData).toHaveProperty("activities");
     expect(response._body.newTripData).toHaveProperty("_id");
     expect(response.status).toBe(201);
+    console.log(response._body.newTripData);
   });
-});
-
-describe("GET /users/:username", () => {
-  test("returns user's username", async () => {
-    const response = await request(app).get("/users/MattB");
-    const { user } = response.body;
-    expect(response.status).toBe(200);
-    expect(user.username).toBe("MattB");
-  });
-  test("returns correct error message if user not found", async () => {
-    const response = await request(app).get("/users/MattyBoo");
-    const { user } = response.body;
-    expect(response.status).toBe(404);
-  });
-});
-
-describe("POST /user", () => {
-  test("returns user object with correct properties", async () => {
+  test("/user returns user object with correct properties", async () => {
     const userToAdd = {
       username: "Jenny",
       password: "password10",
@@ -148,11 +155,12 @@ describe("POST /user", () => {
     const response = await request(app).post("/users").send(userToAdd);
     const { newUser } = response._body;
     expect(response.status).toBe(201);
+    expect(newUser).toHaveProperty("_id");
     expect(newUser).toHaveProperty("username");
     expect(newUser).toHaveProperty("password");
     expect(newUser).toHaveProperty("email");
   });
-  test("400- returns duplicate key error message when new users try to sign in as an existing user", async () => {
+  test("returns duplicate key error message when new users try to sign in as an existing user", async () => {
     const userToAdd = {
       username: "MattB",
       password: "password",
@@ -163,8 +171,100 @@ describe("POST /user", () => {
   });
 });
 
-describe("/POST /trips/:tripbyId/activity", () => {
-  test("should update trips activity pro document", async () => {
+describe("POST /trips/:tripbyid/", () => {
+  test("/members - adds member to members array of a given trip", async () => {
+    const responseId = await request(app).get("/trips");
+    const users = await request(app).get("/users");
+    const userId = users.body.users[0]._id;
+    const { trips } = responseId.body;
+    const userObject = { userId: userId };
+
+    const tripId = trips[1]._id;
+
+    const response = await request(app)
+      .post(`/trips/${tripId}/members`)
+      .send(userObject);
+    expect(response.status).toBe(204);
+
+    const data = await request(app).get(`/trips/${tripId}`);
+    const tripById = data._body.trip;
+    expect(tripById.members).toHaveLength(2);
+  });
+  test("adding an already added member to a trip returns an error and message", async () => {
+    const responseId = await request(app).get("/trips");
+    const users = await request(app).get("/users");
+    const userId = users.body.users[0]._id;
+    const { trips } = responseId.body;
+    const userObject = { userId: userId };
+
+    const tripId = trips[1]._id;
+
+    const response = await request(app)
+      .post(`/trips/${tripId}/members`)
+      .send(userObject);
+    expect(response.status).toBe(204);
+
+    const data = await request(app).get(`/trips/${tripId}`);
+    const tripById = data._body.trip;
+    expect(tripById.members).toHaveLength(2);
+
+    const addSameMember = await request(app)
+      .post(`/trips/${tripId}/members`)
+      .send(userObject);
+
+    expect(addSameMember.status).toBe(404);
+    expect(addSameMember.text).toBe("Member not added!");
+  });
+  test("/stay - updates stay on that trip", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+    const stayId = trips[1].stay[0]._id;
+    const tripId = trips[0]._id;
+    const stayToAdd = {
+      _id: stayId,
+      startdate: "10th May",
+      enddate: "15th May",
+      name: "hotel helloworld",
+      type: "hotel",
+      info: "123 hello street",
+    };
+
+    const result = await request(app)
+      .post(`/trips/${tripId}/stay`)
+      .send(stayToAdd);
+
+    const updatedResponse = await request(app).get("/trips");
+    const updatedTrip = updatedResponse.body.trips[0];
+
+    expect(result.status).toBe(204);
+    expect(updatedTrip.stay).toHaveLength(2);
+  });
+  test("/travel - returns new travel object", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+
+    const tripId = trips[0]._id;
+    const travelToAdd = {
+      _id: tripId,
+      startdate: "24th June",
+      leavetime: "6:45pm",
+      arrivedate: "24th June",
+      arrivetime: "10:30pm",
+      type: "plane",
+      info: "Heathrow",
+    };
+
+    const result = await request(app)
+      .post(`/trips/${tripId}/travel`)
+      .send(travelToAdd);
+
+    const updatedResponse = await request(app).get("/trips");
+    const updatedTrip = updatedResponse.body.trips[0];
+
+    expect(result.status).toBe(204);
+    expect(updatedTrip.travel).toHaveLength(2);
+  });
+  test("/activity - should update specific trip's activity", async () => {
     const responseId = await request(app).get("/trips");
     const { trips } = responseId.body;
 
@@ -183,105 +283,227 @@ describe("/POST /trips/:tripbyId/activity", () => {
 
     const data = await request(app).get(`/trips/${tripId}`);
     const tripById = data._body.trip;
-    console.log(data, "data");
     expect(tripById.activities).toHaveLength(2);
   });
 });
 
-describe("POST /trips/:tripbyid/members", () => {
-  test("adds member to members array of a given trip", async () => {
-    const responseId = await request(app).get("/trips");
-    const { trips } = responseId.body;
+describe("PATCH", () => {
+  describe("PATCH /trips/:trip_id/activities/:activity_id", () => {
+    test("update trips activity", async () => {
+      const responseId = await request(app).get("/trips");
+      const { trips } = responseId.body;
+      const tripId = trips[1]._id;
 
-    const tripId = trips[1]._id;
-    const member = {
-      username: "Justyna",
-      password: "password2",
-      email: "justyna@justyna.com",
-    };
+      const activityId = trips[1].activities[0]._id;
 
-    const response = await request(app)
-      .post(`/trips/${tripId}/members`)
-      .send({ member });
-    expect(response.status).toBe(204);
+      const response = await request(app)
+        .patch(`/trips/${tripId}/activities/${activityId}`)
+        .send({ name: "swimming", info: "test" });
 
-    const data = await request(app).get(`/trips/${tripId}`);
-    const tripById = data._body.trip;
-    expect(tripById.members).toHaveLength(2);
+      expect(response.status).toBe(204);
+    });
+  });
+  describe("PATCH /trips/:trip_id/travel/:travel_id", () => {
+    test("update trips travel", async () => {
+      const responseId = await request(app).get("/trips");
+      const { trips } = responseId.body;
+      const tripId = trips[1]._id;
+
+      const travelId = trips[1].travel[0]._id;
+
+      const response = await request(app)
+        .patch(`/trips/${tripId}/travel/${travelId}`)
+        .send({ startdate: "1/2/2034", type: "train" });
+
+      expect(response.status).toBe(204);
+    });
+  });
+  describe("PATCH /trips/:trip_id/stay/:stay_id", () => {
+    test("update trips stay", async () => {
+      const responseId = await request(app).get("/trips");
+      const { trips } = responseId.body;
+      const tripId = trips[1]._id;
+
+      const stayId = trips[1].stay[0]._id;
+
+      const response = await request(app)
+        .patch(`/trips/${tripId}/stay/${stayId}`)
+        .send({ startdate: "09-13-2099", type: "wood-cabin" });
+
+      expect(response.status).toBe(204);
+    });
+  });
+  describe("PATCH /trips/:trip_id", () => {
+    test("update trips trip name property", async () => {
+      const responseId = await request(app).get("/trips");
+      const { trips } = responseId.body;
+      const tripId = trips[1]._id;
+
+      const response = await request(app)
+        .patch(`/trips/${tripId}`)
+        .send({ name: "Spain" });
+
+      expect(response.status).toBe(204);
+    });
   });
 });
 
-describe("POST", () => {
-  test("patching travel on a trip returns new travel object", async () => {
-    const response = await request(app).get("/trips");
-    const { trips } = response.body;
-
-    const tripId = trips[0]._id;
-    const travelToAdd = {
-      startdate: "24th June",
-      leavetime: "6:45pm",
-      arrivedate: "24th June",
-      arrivetime: "10:30pm",
-      type: "plane",
-      info: "Heathrow",
-    };
-
-    const result = await request(app)
-      .post(`/trips/${tripId}/travel`)
-      .send(travelToAdd);
-
-    const updatedResponse = await request(app).get("/trips");
-    const updatedTrip = updatedResponse.body.trips[0];
-
-    expect(result.status).toBe(204);
-    expect(updatedTrip.travel[1]).toEqual(travelToAdd);
-  });
-
-  test("patching stay on a trip updates stay on that trip", async () => {
-    const response = await request(app).get("/trips");
-    const { trips } = response.body;
-
-    const tripId = trips[0]._id;
-    const stayToAdd = {
-      startdate: "10th May",
-      endate: "15th May",
-      name: "hotel helloworld",
-      type: "hotel",
-      info: "123 hello street",
-    };
-
-    const result = await request(app)
-      .post(`/trips/${tripId}/stay`)
-      .send(stayToAdd);
-
-    const updatedResponse = await request(app).get("/trips");
-    const updatedTrip = updatedResponse.body.trips[0];
-
-    expect(result.status).toBe(204);
-    expect(updatedTrip.stay[1]).toEqual(stayToAdd);
-  });
-});
-
-describe("DELETE", () => {
-  test("", async () => {
+describe("DELETE /trips", () => {
+  test("/:trip_id - deletes an entire trip from the database", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
 
     const tripId = trips[2]._id;
-    const activityToDelete = {
-      startdate: "dateone",
-      name: "banana",
-      info: "banana museum",
-    };
 
-    const result = await request(app)
-      .delete(`/trips/${tripId}/activities`)
-      .send(activityToDelete);
+    const result = await request(app).delete(`/trips/${tripId}/`);
+
+    const updatedResponse = await request(app).get("/trips");
+    const updatedTrips = updatedResponse.body.trips;
+
+    expect(result.status).toBe(204);
+    expect(updatedTrips).toHaveLength(2);
+  });
+  test("deleting a non-existent trip returns an error and relevant message", async () => {
+    const response = await request(app).get("/trips");
+
+    const tripToDelete = "F5DE30FD22067390B2D5C2D0";
+
+    const result = await request(app).delete(`/trips/${tripToDelete}/`);
+
+    expect(result.status).toBe(404);
+    expect(result.text).toBe("Trip not deleted!");
+  });
+});
+
+describe("DELETE /trips/:trip_id/", () => {
+  test("/activity/:activity_id - removes activity from the trip", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+
+    const tripId = trips[2]._id;
+    const activity_id = trips[2].activities[0]._id;
+
+    const result = await request(app).delete(
+      `/trips/${tripId}/activities/${activity_id}`
+    );
 
     const updatedResponse = await request(app).get("/trips");
     const updatedTrip = updatedResponse.body.trips[2];
 
     expect(result.status).toBe(204);
     expect(updatedTrip.activities).toHaveLength(1);
+  });
+  test("deleting a non-existent activity returns an error and relevant message", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+
+    const tripId = trips[2]._id;
+    const invalidActivity = "F5DE30FD22067390B2D5C2D0";
+
+    const result = await request(app).delete(
+      `/trips/${tripId}/activities/${invalidActivity}`
+    );
+
+    expect(result.status).toBe(404);
+    expect(result.text).toBe("Activity not deleted!");
+  });
+  test("/stay/:stay_id - removes a stay from the trip", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+    const tripId = trips[2]._id;
+    const stay_id = trips[2].stay[0]._id;
+
+    const result = await request(app).delete(
+      `/trips/${tripId}/stay/${stay_id}`
+    );
+
+    const updatedResponse = await request(app).get("/trips");
+    const updatedTrip = updatedResponse.body.trips[2];
+
+    expect(result.status).toBe(204);
+    expect(updatedTrip.stay).toHaveLength(1);
+  });
+  test("deleting a non-existent stay returns an error and relevant message", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+
+    const tripId = trips[2]._id;
+    const invalidStay = "F5DE30FD22067390B2D5C2D0";
+
+    const result = await request(app).delete(
+      `/trips/${tripId}/stay/${invalidStay}`
+    );
+
+    expect(result.status).toBe(404);
+    expect(result.text).toBe("Stay not deleted!");
+  });
+  test("/travel/:travel_id - removes a travel from the trip", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+    const tripId = trips[2]._id;
+    const travel_id = trips[2].travel[0]._id;
+
+    const result = await request(app).delete(
+      `/trips/${tripId}/travel/${travel_id}`
+    );
+
+    const updatedResponse = await request(app).get("/trips");
+    const updatedTrip = updatedResponse.body.trips[2];
+
+    expect(result.status).toBe(204);
+    expect(updatedTrip.travel).toHaveLength(1);
+  });
+  test("deleting a non-existent travel returns an error and relevant message", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+
+    const tripId = trips[2]._id;
+    const invalidTravel = "F5DE30FD22067390B2D5C2D0";
+
+    const result = await request(app).delete(
+      `/trips/${tripId}/travel/${invalidTravel}`
+    );
+
+    expect(result.status).toBe(404);
+    expect(result.text).toBe("Travel not deleted!");
+  });
+  test("/members/:member_id - removes a member from the trip", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+    const tripId = trips[2]._id;
+
+    const memberToDelete = {
+      username: "Justyna",
+      // password: "password2",
+      // email: "justyna@justyna.com",
+    };
+
+    const result = await request(app)
+      .delete(`/trips/${tripId}/members`)
+      .send(memberToDelete);
+
+    const updatedResponse = await request(app).get("/trips");
+    const updatedTrip = updatedResponse.body.trips[2];
+
+    expect(result.status).toBe(204);
+    expect(updatedTrip.members).toHaveLength(4);
+  });
+  test("deleting a non-existent member returns an error and relevant message", async () => {
+    const response = await request(app).get("/trips");
+    const { trips } = response.body;
+    const tripId = trips[2]._id;
+
+    const memberToDelete = {
+      username: "Johnny Banana",
+      password: "password2",
+      email: "justyna@justyna.com",
+    };
+
+    const result = await request(app)
+      .delete(`/trips/${tripId}/members`)
+      .send(memberToDelete);
+
+    expect(result.status).toBe(404);
+    expect(result.text).toBe("Member not deleted!");
   });
 });

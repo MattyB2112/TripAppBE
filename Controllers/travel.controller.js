@@ -1,4 +1,8 @@
-const { addTravel } = require("../Models/travel.model");
+const {
+  addTravel,
+  removeTravel,
+  editTravel,
+} = require("../Models/travel.model");
 
 exports.setTravel = async (req, res, next) => {
   const travelData = req.body;
@@ -17,5 +21,33 @@ exports.setTravel = async (req, res, next) => {
     } else {
       next(error);
     }
+  }
+};
+
+exports.deleteTravel = async (req, res, next) => {
+  const { trip_id, travel_id } = req.params;
+  try {
+    const data = await removeTravel(trip_id, travel_id);
+    if (data.acknowledged === true && data.modifiedCount > 0) {
+      res.status(204).send({ data: data });
+    } else {
+      res.status(404).send("Travel not deleted!");
+    }
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+exports.patchTravel = async (req, res, next) => {
+  try {
+    const { trip_id, travel_id } = req.params;
+    const travelToUpdate = req.body;
+
+    const data = await editTravel(trip_id, travel_id, travelToUpdate);
+
+    res.status(204).send({ data: data });
+  } catch (error) {
+    next(error);
   }
 };

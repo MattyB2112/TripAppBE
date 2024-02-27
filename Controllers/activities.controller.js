@@ -1,4 +1,8 @@
-const { addActivity, removeActivity } = require("../Models/activities.model");
+const {
+  addActivity,
+  removeActivity,
+  editActivity,
+} = require("../Models/activities.model");
 
 exports.setActivity = async (req, res, next) => {
   const { trip_id } = req.params;
@@ -17,17 +21,29 @@ exports.setActivity = async (req, res, next) => {
 };
 
 exports.deleteActivity = async (req, res, next) => {
-  const activityToDelete = req.body;
-  const { trip_id } = req.params;
+  const { trip_id, activity_id } = req.params;
   try {
-    const data = await removeActivity(trip_id, activityToDelete);
+    const data = await removeActivity(trip_id, activity_id);
     if (data.acknowledged === true && data.modifiedCount > 0) {
       res.status(204).send({ data: data });
     } else {
-      res.status(404).send("Activity not added!");
+      res.status(404).send("Activity not deleted!");
     }
   } catch (error) {
     console.log(error);
+    next(error);
+  }
+};
+
+exports.patchActivity = async (req, res, next) => {
+  try {
+    const { trip_id, activity_id } = req.params;
+    const activityToUpdate = req.body;
+
+    const data = await editActivity(trip_id, activity_id, activityToUpdate);
+
+    res.status(204).send({ data: data });
+  } catch (error) {
     next(error);
   }
 };

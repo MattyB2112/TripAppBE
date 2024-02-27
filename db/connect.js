@@ -1,18 +1,15 @@
 const mongoose = require("mongoose");
 
-const User = require("./data/dataSchemas");
-const URITest = "mongodb://localhost:27017/TripAppTEST";
-const URIProd = "mongodb://localhost:27017/TripApp";
-const db = mongoose.connect(URIProd);
+mongoose.set("strictQuery", false);
 
-mongoose.connection.on("connected", () => {
-  console.log("Mongoose connected to MongoDB");
-});
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGO_URI);
+    console.log(`MONGODB connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.log(error);
+    process.exit(1);
+  }
+};
 
-mongoose.connection.on("error", (err) => {
-  console.log("Mongoose connection error:", err);
-});
-
-// seedDB().then(() => {
-//   mongoose.connection.close();
-// });
+module.exports = connectDB;
