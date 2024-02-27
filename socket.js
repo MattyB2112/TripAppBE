@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
 const socketIO = require('socket.io');
 const { Chat, Trip } = require('./db/data/dataSchemas');
+const connectDB = require("./db/connect");
+connectDB();
+// mongoose.connect('mongodb://localhost:27017/TripAppTEST');
 
-mongoose.connect('mongodb://localhost:27017/TripAppTEST');
-
-mongoose.connection.on('connected', () => {
-    console.log('Mongoose connected to the database');
-  });
+// mongoose.connection.on('connected', () => {
+//     console.log('Mongoose connected to the database');
+//   });
 
 const createSocketIOServer = (server) => {
   const io = socketIO(server, {
