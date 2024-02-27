@@ -39,7 +39,7 @@ const {
 } = require("./Controllers/activities.controller");
 const { setMember, deleteMember } = require("./Controllers/members.controller");
 
-connectDB();
+// connectDB();
 const app = express();
 
 app.use(cors());
