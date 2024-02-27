@@ -78,13 +78,9 @@ app.use("/", (req, res) => {
 app.use(mongoDBErrorHandler);
 app.use(serverErrorHandler);
 
-const server = app.listen(port, () =>
-  console.log(`server listening on ${port}`)
-);
-
 process.on("unhandledRejection", (error, promise) => {
   console.log(`Logged Error: ${error}`);
   server.close(() => process.exit(1));
 });
 
-module.exports = server;
+module.exports = app;

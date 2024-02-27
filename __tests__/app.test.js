@@ -118,7 +118,7 @@ describe("GET", () => {
 });
 
 describe("POST", () => {
-  test.only("/trip", async () => {
+  test("/trip", async () => {
     const signedInUser = {
       _id: "65dc87145dcd630956190085",
       username: "Lala",
@@ -133,6 +133,7 @@ describe("POST", () => {
       admin: signedInUser.username,
     };
     const newTripObj = { newTrip: newTrip, signedInUser };
+    console.log(newTripObj, "TEST DATA");
 
     const response = await request(app).post("/trips").send(newTripObj);
     expect(response._body.newTripData).toHaveProperty("name");
