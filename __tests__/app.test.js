@@ -17,22 +17,25 @@ beforeEach(async () => {
   await seedDB();
 });
 
-describe("GET", () => {
-  test("/users returns user data", async () => {
+describe("GET /users", () => {
+  test("Returns all users data", async () => {
     const response = await request(app).get("/users");
     const { users } = response.body;
-
     expect(response.status).toBe(200);
   });
+});
 
-  test("/trips returns trip data", async () => {
+describe("GET /trips", () => {
+  test("Returns all trips data", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
 
     expect(response.status).toBe(200);
   });
+});
 
-  test("/trip/:trip_id returns a specific trip", async () => {
+describe("GET /trips/:trip_id", () => {
+  test("Returns data for a specific trip", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
     const activityId = trips[0].activities[0]._id;
@@ -105,7 +108,10 @@ describe("GET", () => {
     expect(response.status).toBe(404);
     expect(response._body.msg).toBe("Trip not found");
   });
-  test("/users/:user_id returns user's details", async () => {
+});
+
+describe("GET /users/:username", () => {
+  test("Returns data for a single user when passed username", async () => {
     const response = await request(app).get("/users/MattB");
     const { user } = response.body;
     expect(response.status).toBe(200);
@@ -121,8 +127,8 @@ describe("GET", () => {
   });
 });
 
-describe("POST", () => {
-  test("/trip", async () => {
+describe("POST /trips", () => {
+  test("Adds a new trip", async () => {
     const signedInUser = {
       _id: "65dc87145dcd630956190085",
       username: "Lala",
@@ -148,9 +154,11 @@ describe("POST", () => {
     expect(response._body.newTripData).toHaveProperty("activities");
     expect(response._body.newTripData).toHaveProperty("_id");
     expect(response.status).toBe(201);
-    console.log(response._body.newTripData);
   });
-  test("/user returns user object with correct properties", async () => {
+});
+
+describe("POST /users", () => {
+  test("Adds a new user object with correct properties", async () => {
     const userToAdd = {
       username: "Jenny",
       password: "password10",
@@ -175,8 +183,8 @@ describe("POST", () => {
   });
 });
 
-describe("POST /trips/:tripbyid/", () => {
-  test.only("/members - adds member to members array of a given trip", async () => {
+describe("POST /trips/:trip_id/members", () => {
+  test("Adds a new member to a given trip", async () => {
     const responseId = await request(app).get("/trips");
     const users = await request(app).get("/users");
     const userId = users.body.users[0]._id;
@@ -219,7 +227,10 @@ describe("POST /trips/:tripbyid/", () => {
     expect(addSameMember.status).toBe(404);
     expect(addSameMember.text).toBe("Member not added!");
   });
-  test("/stay - updates stay on that trip", async () => {
+});
+
+describe("POST /trips/:trip_id/stay", () => {
+  test("Adds a new stay to a given trip", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
     const stayId = trips[1].stay[0]._id;
@@ -243,7 +254,10 @@ describe("POST /trips/:tripbyid/", () => {
     expect(result.status).toBe(204);
     expect(updatedTrip.stay).toHaveLength(2);
   });
-  test("/travel - returns new travel object", async () => {
+});
+
+describe("POST /trips/:trip_id/travel", () => {
+  test("Adds new travel details to a given trip", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
 
@@ -268,7 +282,10 @@ describe("POST /trips/:tripbyid/", () => {
     expect(result.status).toBe(204);
     expect(updatedTrip.travel).toHaveLength(2);
   });
-  test("/activity - should update specific trip's activity", async () => {
+});
+
+describe("POST /trips/:trip_id/activities", () => {
+  test("Adds a new activity to a given trip", async () => {
     const responseId = await request(app).get("/trips");
     const { trips } = responseId.body;
 
@@ -291,69 +308,70 @@ describe("POST /trips/:tripbyid/", () => {
   });
 });
 
-describe("PATCH", () => {
-  describe("PATCH /trips/:trip_id/activities/:activity_id", () => {
-    test("update trips activity", async () => {
-      const responseId = await request(app).get("/trips");
-      const { trips } = responseId.body;
-      const tripId = trips[1]._id;
+describe("PATCH /trips/:trip_id/activities/:activity_id", () => {
+  test("Updates activities on a given trip", async () => {
+    const responseId = await request(app).get("/trips");
+    const { trips } = responseId.body;
+    const tripId = trips[1]._id;
 
-      const activityId = trips[1].activities[0]._id;
+    const activityId = trips[1].activities[0]._id;
 
-      const response = await request(app)
-        .patch(`/trips/${tripId}/activities/${activityId}`)
-        .send({ name: "swimming", info: "test" });
+    const response = await request(app)
+      .patch(`/trips/${tripId}/activities/${activityId}`)
+      .send({ name: "swimming", info: "test" });
 
-      expect(response.status).toBe(204);
-    });
-  });
-  describe("PATCH /trips/:trip_id/travel/:travel_id", () => {
-    test("update trips travel", async () => {
-      const responseId = await request(app).get("/trips");
-      const { trips } = responseId.body;
-      const tripId = trips[1]._id;
-
-      const travelId = trips[1].travel[0]._id;
-
-      const response = await request(app)
-        .patch(`/trips/${tripId}/travel/${travelId}`)
-        .send({ startdate: "1/2/2034", type: "train" });
-
-      expect(response.status).toBe(204);
-    });
-  });
-  describe("PATCH /trips/:trip_id/stay/:stay_id", () => {
-    test("update trips stay", async () => {
-      const responseId = await request(app).get("/trips");
-      const { trips } = responseId.body;
-      const tripId = trips[1]._id;
-
-      const stayId = trips[1].stay[0]._id;
-
-      const response = await request(app)
-        .patch(`/trips/${tripId}/stay/${stayId}`)
-        .send({ startdate: "09-13-2099", type: "wood-cabin" });
-
-      expect(response.status).toBe(204);
-    });
-  });
-  describe("PATCH /trips/:trip_id", () => {
-    test("update trips trip name property", async () => {
-      const responseId = await request(app).get("/trips");
-      const { trips } = responseId.body;
-      const tripId = trips[1]._id;
-
-      const response = await request(app)
-        .patch(`/trips/${tripId}`)
-        .send({ name: "Spain" });
-
-      expect(response.status).toBe(204);
-    });
+    expect(response.status).toBe(204);
   });
 });
 
-describe("DELETE /trips", () => {
-  test("/:trip_id - deletes an entire trip from the database", async () => {
+describe("PATCH /trips/:trip_id/travel/:travel_id", () => {
+  test("Update travel on a given trip", async () => {
+    const responseId = await request(app).get("/trips");
+    const { trips } = responseId.body;
+    const tripId = trips[1]._id;
+
+    const travelId = trips[1].travel[0]._id;
+
+    const response = await request(app)
+      .patch(`/trips/${tripId}/travel/${travelId}`)
+      .send({ startdate: "1/2/2034", type: "train" });
+
+    expect(response.status).toBe(204);
+  });
+});
+
+describe("PATCH /trips/:trip_id/stay/:stay_id", () => {
+  test("Updates stays on a given trip", async () => {
+    const responseId = await request(app).get("/trips");
+    const { trips } = responseId.body;
+    const tripId = trips[1]._id;
+
+    const stayId = trips[1].stay[0]._id;
+
+    const response = await request(app)
+      .patch(`/trips/${tripId}/stay/${stayId}`)
+      .send({ startdate: "09-13-2099", type: "wood-cabin" });
+
+    expect(response.status).toBe(204);
+  });
+});
+
+describe("PATCH /trips/:trip_id", () => {
+  test("Updates details on a given trip", async () => {
+    const responseId = await request(app).get("/trips");
+    const { trips } = responseId.body;
+    const tripId = trips[1]._id;
+
+    const response = await request(app)
+      .patch(`/trips/${tripId}`)
+      .send({ name: "Spain" });
+
+    expect(response.status).toBe(204);
+  });
+});
+
+describe("DELETE /trips/:trip_id", () => {
+  test("Deletes an entire trip from the database", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
 
@@ -379,8 +397,8 @@ describe("DELETE /trips", () => {
   });
 });
 
-describe("DELETE /trips/:trip_id/", () => {
-  test("/activity/:activity_id - removes activity from the trip", async () => {
+describe("DELETE /trips/:trip_id/activity/:activity_id", () => {
+  test("Removes an activity from a given trip", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
 
@@ -411,7 +429,10 @@ describe("DELETE /trips/:trip_id/", () => {
     expect(result.status).toBe(404);
     expect(result.text).toBe("Activity not deleted!");
   });
-  test("/stay/:stay_id - removes a stay from the trip", async () => {
+});
+
+describe("DELETE /trips/:trip_id/stay/:stay_id", () => {
+  test("Removes a stay from a given trip", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
     const tripId = trips[2]._id;
@@ -441,7 +462,10 @@ describe("DELETE /trips/:trip_id/", () => {
     expect(result.status).toBe(404);
     expect(result.text).toBe("Stay not deleted!");
   });
-  test("/travel/:travel_id - removes a travel from the trip", async () => {
+});
+
+describe("DELETE /trips/:trip_id/travel/:travel_id", () => {
+  test("Removes travel details from a given trip", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
     const tripId = trips[2]._id;
@@ -471,7 +495,10 @@ describe("DELETE /trips/:trip_id/", () => {
     expect(result.status).toBe(404);
     expect(result.text).toBe("Travel not deleted!");
   });
-  test("/members/:member_id - removes a member from the trip", async () => {
+});
+
+describe("DELETE /trips/:trip_id/members", () => {
+  test("Allows group admin to remove a member from their trip", async () => {
     const response = await request(app).get("/trips");
     const { trips } = response.body;
     const tripId = trips[2]._id;

@@ -4,7 +4,9 @@ const express = require("express");
 const http = require("http");
 const { createSocketIOServer } = require("./socket");
 const path = require("path");
-const cors = require("cors");
+// //// const socketIO = require("socket.io");
+
+// const cors = require('cors');
 
 const connectDB = require("./db/connect");
 const {
