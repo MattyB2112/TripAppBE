@@ -164,5 +164,21 @@ const seedTrips = [
     ],
   },
 ];
-
-module.exports = { seedUsers, seedTrips };
+const seedMessages = [
+  {
+    messageSender: "Jack",
+    tripId: "65d73824a7734d1d7881b69e",
+    messageContent: "Hello this is a message test from Matt",
+  },
+  {
+    messageSender: "MattB",
+    tripId: "65d73824a7734d1d7881b69e",
+    messageContent: "Hello this is a second message test from Jack",
+  },
+  {
+    messageSender: "Justyna",
+    tripId: "65d73824a7734d1d7881b69e",
+    messageContent: "Hello this is a third message test from Justyna",
+  },
+];
+module.exports = { seedUsers, seedTrips, seedMessages };

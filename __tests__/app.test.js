@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const request = require("supertest");
-const app = require("../app");
+const { app } = require("../app");
 const URITest = "mongodb://localhost:27017/TripAppTEST";
 const { seedDB } = require("../db/seeds/seed");
 
@@ -115,10 +115,14 @@ describe("GET", () => {
     const response = await request(app).get("/users/MattyBoo");
     expect(response.status).toBe(404);
   });
+  test("can get messages", async () => {
+    const tripId = "65ddcf8d42208a1f73d7e3bf";
+    const response = await request(app).get(`/trips/${tripId}/messages`);
+  });
 });
 
 describe("POST", () => {
-  test.only("/trip", async () => {
+  test("/trip", async () => {
     const signedInUser = {
       _id: "65dc87145dcd630956190085",
       username: "Lala",
@@ -172,7 +176,7 @@ describe("POST", () => {
 });
 
 describe("POST /trips/:tripbyid/", () => {
-  test("/members - adds member to members array of a given trip", async () => {
+  test.only("/members - adds member to members array of a given trip", async () => {
     const responseId = await request(app).get("/trips");
     const users = await request(app).get("/users");
     const userId = users.body.users[0]._id;

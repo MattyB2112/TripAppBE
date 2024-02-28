@@ -99,7 +99,7 @@ const chatSchema = new mongoose.Schema({
   },
   tripId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Trip',
+    ref: "Trip",
     required: true,
   },
   messageContent: {
