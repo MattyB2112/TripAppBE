@@ -1,45 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat Application</title>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Application</title>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <input id="messageInput" autocomplete="off" /><button
+      onclick="sendMessage()"
+    >
+      Send
+    </button>
 
-  <ul id="messages"></ul>
-  <input id="messageInput" autocomplete="off" /><button onclick="sendMessage()">Send</button>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+      const socket = io("http://localhost:9090");
 
-  <script>
-    const socket = io('http://localhost:9090');
+      const tripId = "65ddcf8d42208a1f73d7e3bf";
+      const messageSender1 = "Jack";
+      const messageSender2 = "Not Jack";
 
-    const tripId = '65d73824a7734d1d7881b69e';
-    const messageSender1 = 'Jack';
-    const messageSender2 = 'Not Jack';
+      socket.emit("joinTrip", tripId);
 
-    socket.emit('joinTrip', tripId);
+      socket.on("chatMessage", (message) => {
+        const messagesList = document.getElementById("messages");
+        const li = document.createElement("li");
+        li.textContent = `${message.messageSender}: ${message.messageContent}`;
+        messagesList.appendChild(li);
+      });
 
-    socket.on('chatMessage', (message) => {
-      const messagesList = document.getElementById('messages');
-      const li = document.createElement('li');
-      li.textContent = `${message.messageSender}: ${message.messageContent}`;
-      messagesList.appendChild(li);
-    });
+      function sendMessage() {
+        const messageInput = document.getElementById("messageInput");
+        const messageContent = messageInput.value;
 
-    function sendMessage() {
-      const messageInput = document.getElementById('messageInput');
-      const messageContent = messageInput.value;
+        socket.emit("chatMessage", {
+          tripId,
+          messageSender: messageSender1,
+          messageContent,
+        });
 
-      socket.emit('chatMessage', { tripId, messageSender: messageSender1, messageContent });
+        setTimeout(() => {
+          socket.emit("chatMessage", {
+            tripId,
+            messageSender: messageSender2,
+            messageContent: "hi",
+          });
+        }, 1000);
 
-      setTimeout(() => {
-        socket.emit('chatMessage', { tripId, messageSender: messageSender2, messageContent: 'hi' });
-      }, 1000);
-
-      messageInput.value = '';
-    }
-  </script>
-</body>
+        messageInput.value = "";
+      }
+    </script>
+  </body>
 </html>

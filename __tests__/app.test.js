@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const request = require("supertest");
-const app = require("../app");
+const { app } = require("../app");
 const URITest = "mongodb://localhost:27017/TripAppTEST";
 const { seedDB } = require("../db/seeds/seed");
 
@@ -121,6 +121,10 @@ describe("GET /users/:username", () => {
     const response = await request(app).get("/users/MattyBoo");
     expect(response.status).toBe(404);
   });
+  test("can get messages", async () => {
+    const tripId = "65ddcf8d42208a1f73d7e3bf";
+    const response = await request(app).get(`/trips/${tripId}/messages`);
+  });
 });
 
 describe("POST /trips", () => {
@@ -138,7 +142,7 @@ describe("POST /trips", () => {
       name: "Big fun day",
       admin: "Lala",
     };
-   
+
     const response = await request(app).post("/trips").send(newTrip);
     expect(response._body.newTripData).toHaveProperty("name");
     expect(response._body.newTripData).toHaveProperty("startdate");
