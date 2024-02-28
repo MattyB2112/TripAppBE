@@ -6,7 +6,7 @@ const { createSocketIOServer } = require("./socket");
 const path = require("path");
 // //// const socketIO = require("socket.io");
 
-// const cors = require('cors');
+const cors = require("cors");
 
 const connectDB = require("./db/connect");
 const {
@@ -47,6 +47,8 @@ const { getMessages } = require("./Controllers/messages.controller");
 const app = express();
 const server = http.createServer(app);
 const io = createSocketIOServer(server);
+
+app.use(cors());
 
 app.use(
   "/socket.io",
