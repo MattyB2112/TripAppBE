@@ -1,5 +1,5 @@
 // const connectDB = require("./db/connect");
-const { app, server } = require("./app");
+const { app, server, io } = require("./app");
 // const { createSocketIOServer } = require("./socket");
 // connectDB();
 // createSocketIOServer(server);

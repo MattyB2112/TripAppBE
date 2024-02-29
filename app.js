@@ -69,7 +69,7 @@ app.post("/users", postUser);
 app.post("/trips/:trip_id/activities", setActivity);
 app.post("/trips/:trip_id/members", setMember);
 app.post("/trips/:trip_id/travel", setTravel);
-app.post("/trips/:trip_id/stay", setStay);
+app.post("/trips/:trip_id/stay", setStay);npx expo start
 
 app.patch("/trips/:trip_id/activities/:activity_id", patchActivity);
 app.patch("/trips/:trip_id/travel/:travel_id", patchTravel);
@@ -96,4 +96,4 @@ process.on("unhandledRejection", (error, promise) => {
   server.close(() => process.exit(1));
 });
 
-module.exports = { app, server };
+module.exports = { app, server, io };

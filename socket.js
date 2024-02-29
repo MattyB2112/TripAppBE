@@ -3,6 +3,7 @@ const socketIO = require("socket.io");
 const { Chat, Trip } = require("./db/data/dataSchemas");
 const connectDB = require("./db/connect");
 connectDB();
+const server = require("./app");
 
 const createSocketIOServer = (server) => {
   const io = socketIO(server, {
